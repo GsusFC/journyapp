@@ -2,6 +2,7 @@ import { createAppKit } from '@reown/appkit/react'
 import { baseSepolia, base } from 'wagmi/chains'
 import { QueryClient } from '@tanstack/react-query'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
+import { http } from 'wagmi'
 
 // 1. Defensive Logging & Env Var Retrieval
 const projectId = import.meta.env.VITE_WALLET_PROJECT_ID || '349ee7a88d119a669be53f17c9449b78' // Fallback for dev if needed, but prefer env
@@ -19,7 +20,11 @@ const metadata = {
 export const wagmiAdapter = new WagmiAdapter({
     networks: [baseSepolia, base],
     projectId,
-    ssr: false
+    ssr: false,
+    transports: {
+        [baseSepolia.id]: http(), // Use default public RPC for Sepolia
+        [base.id]: http()
+    }
 })
 
 // 2. Try-Catch Block for Safety
