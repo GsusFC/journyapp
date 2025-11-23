@@ -5,10 +5,10 @@ import { readContract } from '@wagmi/core'
 import { useNavigate } from 'react-router-dom'
 import { ConnectButton } from '../components/ConnectButton'
 import { CONTRACT_ADDRESS } from '../lib/constants'
-import { formatDate, cn } from '../lib/utils'
+import { formatDate } from '../lib/utils'
 import { ipfsService } from '../services/ipfs'
 import { encryptionService } from '../services/encryption'
-import { wagmiAdapter, config } from '../config/web3'
+import { config } from '../config/web3'
 import { ScrambleText } from '../components/ui/ScrambleText'
 import JournyLogABI from '../abis/JournyLog.json'
 
@@ -27,7 +27,7 @@ export function HistoryPage() {
     const [isDecrypting, setIsDecrypting] = useState(false)
     const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
-    const { data: entryCount, refetch, isLoading, isError, error } = useReadContract({
+    const { data: entryCount, refetch, isError, error } = useReadContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
         abi: JournyLogABI.abi,
         functionName: 'getEntryCount',
