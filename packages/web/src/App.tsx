@@ -4,11 +4,14 @@ import { WritePage } from './pages/WritePage'
 import { HistoryPage } from './pages/HistoryPage'
 import { LandingPage } from './pages/LandingPage'
 
+import { SystemStatus } from './components/debug/SystemStatus'
+
 function App() {
   const { isConnected } = useAccount()
 
   return (
     <BrowserRouter>
+      <SystemStatus />
       <Routes>
         <Route
           path="/"
