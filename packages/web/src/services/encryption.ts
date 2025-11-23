@@ -47,8 +47,8 @@ class EncryptionService {
             const salt = window.crypto.getRandomValues(new Uint8Array(16))
             const iv = window.crypto.getRandomValues(new Uint8Array(12))
 
-            // Derive key from user's address (you could also use wallet signature)
-            const key = await this.deriveKey(userAddress, salt)
+            // Derive key from user's address (normalized to lowercase for consistency)
+            const key = await this.deriveKey(userAddress.toLowerCase(), salt)
 
             // Encrypt
             const encryptedBuffer = await window.crypto.subtle.encrypt(
@@ -86,7 +86,7 @@ class EncryptionService {
             const saltArray = Uint8Array.from(atob(salt), c => c.charCodeAt(0))
 
             // Derive same key
-            const key = await this.deriveKey(userAddress, saltArray)
+            const key = await this.deriveKey(userAddress.toLowerCase(), saltArray)
 
             // Decrypt
             const decryptedBuffer = await window.crypto.subtle.decrypt(
