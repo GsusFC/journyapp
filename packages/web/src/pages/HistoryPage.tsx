@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAccount, useReadContract } from 'wagmi'
 import { readContract } from '@wagmi/core'
 import { useNavigate } from 'react-router-dom'
@@ -9,9 +9,11 @@ import { formatDate, cn } from '../lib/utils'
 import { ipfsService } from '../services/ipfs'
 import { encryptionService } from '../services/encryption'
 import { wagmiAdapter, config } from '../config/web3'
+import { ScrambleText } from '../components/ui/ScrambleText'
 import JournyLogABI from '../abis/JournyLog.json'
 
 interface DecryptedEntry {
+    index: number
     cid: string
     content: string
     timestamp: number
@@ -20,56 +22,47 @@ interface DecryptedEntry {
 export function HistoryPage() {
     const navigate = useNavigate()
     const { address } = useAccount()
-    const [selectedEntry, setSelectedEntry] = useState<DecryptedEntry | null>(null)
+    const [selectedId, setSelectedId] = useState<number | null>(null)
+    const [decryptedEntry, setDecryptedEntry] = useState<DecryptedEntry | null>(null)
     const [isDecrypting, setIsDecrypting] = useState(false)
+    const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
     const { data: entryCount, refetch, isLoading, isError, error } = useReadContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
         abi: JournyLogABI.abi,
         functionName: 'getEntryCount',
         args: [address],
-        chainId: 84532, // Force Base Sepolia
+        chainId: 84532,
     })
 
-    // DEBUGGING LOGS
-    console.log("DEBUG: HistoryPage Render")
-    console.log("DEBUG: Address:", address)
-    console.log("DEBUG: Contract Address:", CONTRACT_ADDRESS)
-    console.log("DEBUG: Entry Count Data:", entryCount)
-    console.log("DEBUG: Is Loading:", isLoading)
-    console.log("DEBUG: Is Error:", isError)
-    if (error) console.error("DEBUG: Read Error:", error)
-
     useEffect(() => {
-        if (address) {
-            console.log("DEBUG: Triggering Refetch")
-            refetch()
-        }
+        if (address) refetch()
     }, [address, refetch])
 
-    const handleViewEntry = async (index: number) => {
+    const handleCardClick = async (index: number) => {
+        setSelectedId(index)
+        setDecryptedEntry(null)
+        setErrorMsg(null)
+
         if (!address) return
 
         try {
             setIsDecrypting(true)
 
-            // FIX: Use imperative readContract action instead of hook
             const cid = await readContract(config, {
                 address: CONTRACT_ADDRESS as `0x${string}`,
                 abi: JournyLogABI.abi,
                 functionName: 'getEntry',
                 args: [address, index],
-                chainId: 84532, // Force Base Sepolia
+                chainId: 84532,
             }) as string
 
             const payload = await ipfsService.fetchEncryptedEntry(cid)
-            console.log("DEBUG: IPFS Payload:", payload)
 
             if (!payload.encrypted || !payload.iv || !payload.salt) {
-                throw new Error("Invalid payload structure from IPFS")
+                throw new Error("Invalid payload structure")
             }
 
-            console.log("DEBUG: Attempting decryption with address:", address)
             const decrypted = await encryptionService.decrypt(
                 payload.encrypted,
                 payload.iv,
@@ -77,135 +70,184 @@ export function HistoryPage() {
                 address
             )
 
-            setSelectedEntry({
+            setDecryptedEntry({
+                index,
                 cid,
                 content: decrypted,
                 timestamp: payload.timestamp
             })
         } catch (error) {
-            console.error('Failed to decrypt entry:', error)
-            alert(`DECRYPTION FAILED: ${(error as Error).message}`)
+            console.error('Decryption failed:', error)
+            setErrorMsg((error as Error).message)
         } finally {
             setIsDecrypting(false)
         }
     }
 
+    const handleClose = () => {
+        setSelectedId(null)
+        setDecryptedEntry(null)
+        setErrorMsg(null)
+    }
+
     const totalEntries = entryCount ? Number(entryCount) : 0
 
     return (
-        <div className="min-h-screen bg-surface flex flex-col">
+        <div className="min-h-screen bg-surface flex flex-col relative">
             {/* Header */}
-            <header className="border-b-2 border-text-primary/10 bg-surface sticky top-0 z-10">
+            <header className="border-b border-text-primary/5 bg-surface/80 backdrop-blur-md sticky top-0 z-10">
                 <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
                     <button
                         onClick={() => navigate('/write')}
-                        className="text-xs uppercase tracking-widest text-text-primary/60 hover:text-brand-600 transition-colors font-bold"
+                        className="text-xs uppercase tracking-widest text-text-primary/60 hover:text-brand-600 transition-colors font-bold flex items-center gap-2"
                     >
-                        ← Write
+                        <span>←</span> WRITE
                     </button>
-                    <div className="flex items-center gap-4">
-                        <div className="text-[10px] font-mono text-text-primary/40">
-                            CHAIN: {wagmiAdapter.wagmiConfig.state.chainId}
-                        </div>
-                        <ConnectButton />
-                    </div>
+                    <ConnectButton />
                 </div>
             </header>
 
             {/* Main Content */}
             <main className="flex-1 max-w-4xl mx-auto w-full p-6">
-                <div className="space-y-8">
-                    <h1 className="text-4xl font-bold tracking-tighter text-text-primary uppercase">
-                        Your History
-                    </h1>
+                <div className="space-y-12">
+                    <div className="flex items-baseline justify-between border-b border-text-primary/10 pb-4">
+                        <h1 className="text-2xl font-bold tracking-tight text-text-primary uppercase">
+                            Journal History
+                        </h1>
+                        <span className="font-mono text-xs text-text-primary/40">
+                            {totalEntries} {totalEntries === 1 ? 'MEMORY' : 'MEMORIES'}
+                        </span>
+                    </div>
 
-                    <p className="text-sm text-text-primary/60 mb-12 uppercase tracking-wider">
-                        {totalEntries === 0 ? 'NO ENTRIES YET' : `${totalEntries} ${totalEntries === 1 ? 'ENTRY' : 'ENTRIES'}`}
-                    </p>
-
-                    {/* DEBUG ERROR DISPLAY */}
                     {isError && (
-                        <div className="p-4 mb-8 bg-red-100 border border-red-400 text-red-700 font-mono text-xs break-all">
-                            ERROR READING CONTRACT: {error?.message}
+                        <div className="p-4 bg-red-50 border border-red-200 text-red-600 font-mono text-xs">
+                            SYNC ERROR: {error?.message}
                         </div>
                     )}
 
-                    {/* Entries Grid */}
-                    {totalEntries > 0 ? (
-                        <div className="grid gap-3">
-                            {Array.from({ length: totalEntries }).map((_, i) => {
-                                const index = totalEntries - 1 - i // Reverse order
-                                return (
-                                    <motion.div
-                                        key={index}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: i * 0.05 }}
-                                        onClick={() => handleViewEntry(index)}
-                                        className={cn(
-                                            "p-6 border-2 border-text-primary/10 cursor-pointer group",
-                                            "hover:border-brand-600 hover:bg-surface-dark transition-all duration-300"
-                                        )}
-                                    >
-                                        <div className="flex items-center justify-between">
-                                            <span className="font-mono text-xs text-text-primary/40 group-hover:text-brand-600 transition-colors">
-                                                #{index + 1}
-                                            </span>
-                                            <span className="text-xs uppercase tracking-widest font-bold text-text-primary/60">
-                                                {isDecrypting ? 'DECRYPTING...' : 'CLICK TO VIEW'}
-                                            </span>
-                                        </div>
-                                    </motion.div>
-                                )
-                            })}
-                        </div>
-                    ) : (
-                        <div className="text-center py-20 border-2 border-dashed border-text-primary/10">
-                            <p className="text-text-primary/40 font-mono text-sm">
-                                NOTHING HERE YET
-                            </p>
-                        </div>
-                    )}
+                    {/* Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {Array.from({ length: totalEntries }).map((_, i) => {
+                            const index = totalEntries - 1 - i
+                            return (
+                                <motion.div
+                                    layoutId={`card-${index}`}
+                                    key={index}
+                                    onClick={() => handleCardClick(index)}
+                                    className="group cursor-pointer bg-white border border-text-primary/5 hover:border-brand-600/30 hover:shadow-lg transition-all duration-300 p-6 relative overflow-hidden"
+                                >
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-brand-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                                    <div className="flex justify-between items-start mb-4">
+                                        <span className="font-mono text-xs text-text-primary/30">
+                                            #{String(index + 1).padStart(3, '0')}
+                                        </span>
+                                        <div className="w-2 h-2 rounded-full bg-text-primary/10 group-hover:bg-brand-600 transition-colors" />
+                                    </div>
+
+                                    <div className="h-24 flex items-center justify-center">
+                                        <span className="text-xs uppercase tracking-widest text-text-primary/40 font-bold group-hover:text-brand-600 transition-colors">
+                                            View Memory
+                                        </span>
+                                    </div>
+                                </motion.div>
+                            )
+                        })}
+                    </div>
                 </div>
             </main>
 
-            {/* Entry Modal */}
-            {selectedEntry && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-surface/90 backdrop-blur-sm">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="bg-white w-full max-w-2xl max-h-[80vh] overflow-y-auto border-2 border-text-primary shadow-2xl p-8 relative"
-                    >
-                        <button
-                            onClick={() => setSelectedEntry(null)}
-                            className="absolute top-4 right-4 text-text-primary/40 hover:text-brand-600 transition-colors"
-                        >
-                            CLOSE [X]
-                        </button>
+            {/* Expanded View (Modal) */}
+            <AnimatePresence>
+                {selectedId !== null && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={handleClose}
+                            className="fixed inset-0 bg-surface/90 backdrop-blur-sm z-40"
+                        />
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+                            <motion.div
+                                layoutId={`card-${selectedId}`}
+                                className="bg-white w-full max-w-2xl h-[80vh] shadow-2xl border border-text-primary/10 overflow-hidden flex flex-col pointer-events-auto relative"
+                            >
+                                {/* Modal Header */}
+                                <div className="p-6 border-b border-text-primary/5 flex justify-between items-center bg-surface">
+                                    <div className="flex items-center gap-4">
+                                        <span className="font-mono text-xs text-text-primary/40">
+                                            #{String(selectedId + 1).padStart(3, '0')}
+                                        </span>
+                                        {decryptedEntry && (
+                                            <span className="font-mono text-xs text-brand-600">
+                                                {formatDate(decryptedEntry.timestamp)}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <button
+                                        onClick={handleClose}
+                                        className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-text-primary/5 transition-colors"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
 
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between border-b border-text-primary/10 pb-4">
-                                <span className="font-mono text-xs text-text-primary/40">
-                                    {formatDate(selectedEntry.timestamp)}
-                                </span>
-                                <a
-                                    href={`https://ipfs.io/ipfs/${selectedEntry.cid}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-[10px] uppercase tracking-widest text-brand-600 hover:underline"
-                                >
-                                    View on IPFS
-                                </a>
-                            </div>
+                                {/* Modal Content */}
+                                <div className="flex-1 p-8 overflow-y-auto font-serif text-lg leading-relaxed text-text-primary">
+                                    {isDecrypting ? (
+                                        <div className="h-full flex flex-col items-center justify-center gap-4">
+                                            <div className="w-12 h-12 border-2 border-brand-600/20 border-t-brand-600 rounded-full animate-spin" />
+                                            <span className="font-mono text-xs animate-pulse text-brand-600 uppercase tracking-widest">
+                                                Decrypting Secure Content...
+                                            </span>
+                                        </div>
+                                    ) : errorMsg ? (
+                                        <div className="h-full flex flex-col items-center justify-center text-red-500 gap-4">
+                                            <span className="text-4xl">🔒</span>
+                                            <p className="font-mono text-xs uppercase tracking-widest text-center max-w-xs">
+                                                {errorMsg}
+                                            </p>
+                                            <button
+                                                onClick={() => handleCardClick(selectedId)}
+                                                className="text-xs underline hover:text-red-700"
+                                            >
+                                                Try Again
+                                            </button>
+                                        </div>
+                                    ) : decryptedEntry ? (
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ delay: 0.2 }}
+                                        >
+                                            <ScrambleText
+                                                text={decryptedEntry.content}
+                                                speed={1.5}
+                                                className="whitespace-pre-wrap"
+                                            />
 
-                            <div className="prose prose-sm max-w-none font-serif leading-relaxed whitespace-pre-wrap">
-                                {selectedEntry.content}
-                            </div>
+                                            <div className="mt-12 pt-8 border-t border-text-primary/5 flex justify-between items-center">
+                                                <a
+                                                    href={`https://ipfs.io/ipfs/${decryptedEntry.cid}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="font-mono text-[10px] text-text-primary/30 hover:text-brand-600 transition-colors uppercase tracking-wider"
+                                                >
+                                                    IPFS: {decryptedEntry.cid.slice(0, 8)}...
+                                                </a>
+                                                <div className="font-mono text-[10px] text-text-primary/30 uppercase tracking-wider">
+                                                    End of Entry
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    ) : null}
+                                </div>
+                            </motion.div>
                         </div>
-                    </motion.div>
-                </div>
-            )}
+                    </>
+                )}
+            </AnimatePresence>
         </div>
     )
 }
