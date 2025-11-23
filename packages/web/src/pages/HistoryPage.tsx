@@ -21,12 +21,18 @@ export function HistoryPage() {
     const [selectedEntry, setSelectedEntry] = useState<DecryptedEntry | null>(null)
     const [isDecrypting, setIsDecrypting] = useState(false)
 
-    const { data: entryCount } = useReadContract({
+    const { data: entryCount, refetch } = useReadContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
         abi: JournyLogABI.abi,
         functionName: 'getEntryCount',
         args: [address],
     })
+
+    useEffect(() => {
+        if (address) {
+            refetch()
+        }
+    }, [address, refetch])
 
     const handleViewEntry = async (index: number) => {
         if (!address) return
