@@ -61,7 +61,13 @@ export function HistoryPage() {
             }) as { data: string }
 
             const payload = await ipfsService.fetchEncryptedEntry(cid)
+            console.log("DEBUG: IPFS Payload:", payload)
 
+            if (!payload.encrypted || !payload.iv || !payload.salt) {
+                throw new Error("Invalid payload structure from IPFS")
+            }
+
+            console.log("DEBUG: Attempting decryption with address:", address)
             const decrypted = await encryptionService.decrypt(
                 payload.encrypted,
                 payload.iv,
@@ -76,7 +82,7 @@ export function HistoryPage() {
             })
         } catch (error) {
             console.error('Failed to decrypt entry:', error)
-            alert('DECRYPTION FAILED')
+            alert(`DECRYPTION FAILED: ${(error as Error).message}`)
         } finally {
             setIsDecrypting(false)
         }
