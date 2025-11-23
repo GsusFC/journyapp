@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    @apply bg-surface text-text-primary antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-surface;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-brand-600;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-brand-700;
+}
+
+/* Focus states */
+:focus-visible {
+  @apply outline-none ring-2 ring-brand-600 ring-offset-2 ring-offset-surface;
+}
