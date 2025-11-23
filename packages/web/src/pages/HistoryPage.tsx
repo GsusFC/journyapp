@@ -7,6 +7,7 @@ import { CONTRACT_ADDRESS } from '../lib/constants'
 import { formatDate, cn } from '../lib/utils'
 import { ipfsService } from '../services/ipfs'
 import { encryptionService } from '../services/encryption'
+import { wagmiAdapter } from '../config/web3'
 import JournyLogABI from '../abis/JournyLog.json'
 
 interface DecryptedEntry {
@@ -84,7 +85,12 @@ export function HistoryPage() {
                     >
                         ← Write
                     </button>
-                    <ConnectButton />
+                    <div className="flex items-center gap-4">
+                        <div className="text-[10px] font-mono text-text-primary/40">
+                            CHAIN: {wagmiAdapter.wagmiConfig.state.chainId}
+                        </div>
+                        <ConnectButton />
+                    </div>
                 </div>
             </header>
 
