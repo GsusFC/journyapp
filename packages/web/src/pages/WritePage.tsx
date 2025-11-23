@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract, useSwitchChain, useChainId } from 'wagmi'
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract, useChainId } from 'wagmi'
+import { useAppKit } from '@reown/appkit/react'
 import { ConnectButton } from '../components/ConnectButton'
 import { encryptionService } from '../services/encryption'
 import { ipfsService } from '../services/ipfs'
@@ -26,7 +27,7 @@ export function WritePage() {
         args: [address],
     })
 
-    const { switchChain } = useSwitchChain()
+    const { open } = useAppKit()
     const chainId = useChainId()
 
     const handleSave = async () => {
@@ -34,15 +35,9 @@ export function WritePage() {
 
         // Guard: Check Network
         if (chainId !== 84532) {
-            try {
-                setStatusMessage('SWITCHING NETWORK...')
-                switchChain({ chainId: 84532 })
-                return // Stop here, user needs to switch first
-            } catch (error) {
-                console.error('Failed to switch network:', error)
-                setStatusMessage('WRONG NETWORK')
-                return
-            }
+            setStatusMessage('WRONG NETWORK')
+            await open({ view: 'Networks' }) // Open AppKit Network Modal
+            return
         }
 
         try {
