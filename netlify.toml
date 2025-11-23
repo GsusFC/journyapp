@@ -1,0 +1,6 @@
+[build]
+  command = "npm run build --workspace packages/web"
+  publish = "packages/web/dist"
+
+[build.environment]
+  NODE_VERSION = "20.19"
