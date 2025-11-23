@@ -22,7 +22,7 @@ export const wagmiAdapter = new WagmiAdapter({
     projectId,
     ssr: false,
     transports: {
-        [baseSepolia.id]: http(), // Use default public RPC for Sepolia
+        [baseSepolia.id]: http('https://sepolia.base.org'), // Explicit Base Sepolia RPC
         [base.id]: http()
     }
 })
