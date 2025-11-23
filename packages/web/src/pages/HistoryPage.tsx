@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useAccount, useReadContract } from 'wagmi'
+import { readContract } from '@wagmi/core'
 import { useNavigate } from 'react-router-dom'
 import { ConnectButton } from '../components/ConnectButton'
 import { CONTRACT_ADDRESS } from '../lib/constants'
 import { formatDate, cn } from '../lib/utils'
 import { ipfsService } from '../services/ipfs'
 import { encryptionService } from '../services/encryption'
-import { wagmiAdapter } from '../config/web3'
+import { wagmiAdapter, config } from '../config/web3'
 import JournyLogABI from '../abis/JournyLog.json'
 
 interface DecryptedEntry {
@@ -52,13 +53,14 @@ export function HistoryPage() {
         try {
             setIsDecrypting(true)
 
-            const { data: cid } = await useReadContract({
+            // FIX: Use imperative readContract action instead of hook
+            const cid = await readContract(config, {
                 address: CONTRACT_ADDRESS as `0x${string}`,
                 abi: JournyLogABI.abi,
                 functionName: 'getEntry',
                 args: [address, index],
                 chainId: 84532, // Force Base Sepolia
-            }) as { data: string }
+            }) as string
 
             const payload = await ipfsService.fetchEncryptedEntry(cid)
             console.log("DEBUG: IPFS Payload:", payload)
@@ -88,10 +90,10 @@ export function HistoryPage() {
         }
     }
 
-    const totalEntries = Number(entryCount || 0)
+    const totalEntries = entryCount ? Number(entryCount) : 0
 
     return (
-        <div className="min-h-screen bg-surface">
+        <div className="min-h-screen bg-surface flex flex-col">
             {/* Header */}
             <header className="border-b-2 border-text-primary/10 bg-surface sticky top-0 z-10">
                 <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -111,14 +113,12 @@ export function HistoryPage() {
             </header>
 
             {/* Main Content */}
-            <main className="max-w-4xl mx-auto px-6 py-12">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                >
-                    <h1 className="text-4xl font-black text-text-primary mb-2">
-                        YOUR JOURNEY
+            <main className="flex-1 max-w-4xl mx-auto w-full p-6">
+                <div className="space-y-8">
+                    <h1 className="text-4xl font-bold tracking-tighter text-text-primary uppercase">
+                        Your History
                     </h1>
+
                     <p className="text-sm text-text-primary/60 mb-12 uppercase tracking-wider">
                         {totalEntries === 0 ? 'NO ENTRIES YET' : `${totalEntries} ${totalEntries === 1 ? 'ENTRY' : 'ENTRIES'}`}
                     </p>
@@ -133,126 +133,79 @@ export function HistoryPage() {
                     {/* Entries Grid */}
                     {totalEntries > 0 ? (
                         <div className="grid gap-3">
-                            {Array.from({ length: totalEntries }, (_, i) => totalEntries - 1 - i).map((index) => (
-                                <EntryCard
-                                    key={index}
-                                    index={index}
-                                    onView={() => handleViewEntry(index)}
-                                    isDecrypting={isDecrypting}
-                                />
-                            ))}
+                            {Array.from({ length: totalEntries }).map((_, i) => {
+                                const index = totalEntries - 1 - i // Reverse order
+                                return (
+                                    <motion.div
+                                        key={index}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: i * 0.05 }}
+                                        onClick={() => handleViewEntry(index)}
+                                        className={cn(
+                                            "p-6 border-2 border-text-primary/10 cursor-pointer group",
+                                            "hover:border-brand-600 hover:bg-surface-dark transition-all duration-300"
+                                        )}
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <span className="font-mono text-xs text-text-primary/40 group-hover:text-brand-600 transition-colors">
+                                                #{index + 1}
+                                            </span>
+                                            <span className="text-xs uppercase tracking-widest font-bold text-text-primary/60">
+                                                {isDecrypting ? 'DECRYPTING...' : 'CLICK TO VIEW'}
+                                            </span>
+                                        </div>
+                                    </motion.div>
+                                )
+                            })}
                         </div>
                     ) : (
-                        <div className="text-center py-24 border-2 border-dashed border-text-primary/10">
-                            <p className="text-xs uppercase tracking-widest text-text-primary/40">
-                                START WRITING TO SEE ENTRIES
+                        <div className="text-center py-20 border-2 border-dashed border-text-primary/10">
+                            <p className="text-text-primary/40 font-mono text-sm">
+                                NOTHING HERE YET
                             </p>
                         </div>
                     )}
-                </motion.div>
-
-                {/* Entry Modal */}
-                {selectedEntry && (
-                    <EntryModal
-                        entry={selectedEntry}
-                        onClose={() => setSelectedEntry(null)}
-                    />
-                )}
+                </div>
             </main>
-        </div>
-    )
-}
 
-function EntryCard({
-    index,
-    onView,
-    isDecrypting
-}: {
-    index: number
-    onView: () => void
-    isDecrypting: boolean
-}) {
-    return (
-        <motion.button
-            whileHover={{ x: 4 }}
-            whileTap={{ scale: 0.99 }}
-            onClick={onView}
-            disabled={isDecrypting}
-            className={cn(
-                "w-full p-6 text-left",
-                "bg-white border-2 border-text-primary/10",
-                "hover:border-brand-600",
-                "transition-all duration-200",
-                "disabled:opacity-50 disabled:cursor-not-allowed"
+            {/* Entry Modal */}
+            {selectedEntry && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-surface/90 backdrop-blur-sm">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-white w-full max-w-2xl max-h-[80vh] overflow-y-auto border-2 border-text-primary shadow-2xl p-8 relative"
+                    >
+                        <button
+                            onClick={() => setSelectedEntry(null)}
+                            className="absolute top-4 right-4 text-text-primary/40 hover:text-brand-600 transition-colors"
+                        >
+                            CLOSE [X]
+                        </button>
+
+                        <div className="space-y-6">
+                            <div className="flex items-center justify-between border-b border-text-primary/10 pb-4">
+                                <span className="font-mono text-xs text-text-primary/40">
+                                    {formatDate(selectedEntry.timestamp)}
+                                </span>
+                                <a
+                                    href={`https://ipfs.io/ipfs/${selectedEntry.cid}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[10px] uppercase tracking-widest text-brand-600 hover:underline"
+                                >
+                                    View on IPFS
+                                </a>
+                            </div>
+
+                            <div className="prose prose-sm max-w-none font-serif leading-relaxed whitespace-pre-wrap">
+                                {selectedEntry.content}
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
             )}
-        >
-            <div className="flex items-center justify-between">
-                <div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-brand-600 mb-1">
-                        ENTRY #{String(index + 1).padStart(3, '0')}
-                    </p>
-                    <p className="text-xs uppercase tracking-wider text-text-primary/60">
-                        CLICK TO DECRYPT
-                    </p>
-                </div>
-                <div className="text-2xl text-brand-600">→</div>
-            </div>
-        </motion.button>
-    )
-}
-
-function EntryModal({
-    entry,
-    onClose
-}: {
-    entry: DecryptedEntry
-    onClose: () => void
-}) {
-    useEffect(() => {
-        const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose()
-        }
-        window.addEventListener('keydown', handleEscape)
-        return () => window.removeEventListener('keydown', handleEscape)
-    }, [onClose])
-
-    return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-text-primary/80 z-50 flex items-center justify-center p-6"
-        >
-            <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.95, opacity: 0 }}
-                onClick={(e) => e.stopPropagation()}
-                className="bg-surface border-4 border-brand-600 p-8 max-w-3xl w-full max-h-[80vh] overflow-y-auto"
-            >
-                <div className="mb-8 pb-6 border-b-2 border-text-primary/10">
-                    <p className="text-xs uppercase tracking-widest text-text-primary/60 mb-2">
-                        {formatDate(Math.floor(entry.timestamp / 1000))}
-                    </p>
-                    <div className="text-xs font-mono text-brand-600 break-all">
-                        {entry.cid.slice(0, 40)}...
-                    </div>
-                </div>
-
-                <div className="mb-8">
-                    <p className="text-text-primary leading-loose whitespace-pre-wrap">
-                        {entry.content}
-                    </p>
-                </div>
-
-                <button
-                    onClick={onClose}
-                    className="w-full py-4 bg-surface-dark border-2 border-brand-600 text-brand-600 hover:bg-brand-600 hover:text-white transition-all uppercase tracking-widest text-xs font-bold"
-                >
-                    Close
-                </button>
-            </motion.div>
-        </motion.div>
+        </div>
     )
 }
