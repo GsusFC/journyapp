@@ -22,7 +22,7 @@ export function HistoryPage() {
     const [selectedEntry, setSelectedEntry] = useState<DecryptedEntry | null>(null)
     const [isDecrypting, setIsDecrypting] = useState(false)
 
-    const { data: entryCount, refetch } = useReadContract({
+    const { data: entryCount, refetch, isLoading, isError, error } = useReadContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
         abi: JournyLogABI.abi,
         functionName: 'getEntryCount',
@@ -30,8 +30,18 @@ export function HistoryPage() {
         chainId: 84532, // Force Base Sepolia
     })
 
+    // DEBUGGING LOGS
+    console.log("DEBUG: HistoryPage Render")
+    console.log("DEBUG: Address:", address)
+    console.log("DEBUG: Contract Address:", CONTRACT_ADDRESS)
+    console.log("DEBUG: Entry Count Data:", entryCount)
+    console.log("DEBUG: Is Loading:", isLoading)
+    console.log("DEBUG: Is Error:", isError)
+    if (error) console.error("DEBUG: Read Error:", error)
+
     useEffect(() => {
         if (address) {
+            console.log("DEBUG: Triggering Refetch")
             refetch()
         }
     }, [address, refetch])
@@ -106,6 +116,13 @@ export function HistoryPage() {
                     <p className="text-sm text-text-primary/60 mb-12 uppercase tracking-wider">
                         {totalEntries === 0 ? 'NO ENTRIES YET' : `${totalEntries} ${totalEntries === 1 ? 'ENTRY' : 'ENTRIES'}`}
                     </p>
+
+                    {/* DEBUG ERROR DISPLAY */}
+                    {isError && (
+                        <div className="p-4 mb-8 bg-red-100 border border-red-400 text-red-700 font-mono text-xs break-all">
+                            ERROR READING CONTRACT: {error?.message}
+                        </div>
+                    )}
 
                     {/* Entries Grid */}
                     {totalEntries > 0 ? (
