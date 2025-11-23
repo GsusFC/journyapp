@@ -26,6 +26,7 @@ export function HistoryPage() {
         abi: JournyLogABI.abi,
         functionName: 'getEntryCount',
         args: [address],
+        chainId: 84532, // Force Base Sepolia
     })
 
     useEffect(() => {
@@ -45,6 +46,7 @@ export function HistoryPage() {
                 abi: JournyLogABI.abi,
                 functionName: 'getEntry',
                 args: [address, index],
+                chainId: 84532, // Force Base Sepolia
             }) as { data: string }
 
             const payload = await ipfsService.fetchEncryptedEntry(cid)
