@@ -1,5 +1,5 @@
 import { createAppKit } from '@reown/appkit/react'
-import { baseSepolia, base } from 'wagmi/chains'
+import { baseSepolia } from 'wagmi/chains'
 import { QueryClient } from '@tanstack/react-query'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { http } from 'wagmi'
@@ -16,14 +16,13 @@ const metadata = {
     icons: ['https://avatars.githubusercontent.com/u/179229932']
 }
 
-// Create Wagmi Adapter
+// Create Wagmi Adapter (ONLY Base Sepolia - Contract Chain)
 export const wagmiAdapter = new WagmiAdapter({
-    networks: [baseSepolia, base],
+    networks: [baseSepolia],
     projectId,
     ssr: false,
     transports: {
         [baseSepolia.id]: http('https://sepolia.base.org'), // Explicit Base Sepolia RPC
-        [base.id]: http()
     }
 })
 
@@ -31,7 +30,7 @@ export const wagmiAdapter = new WagmiAdapter({
 try {
     createAppKit({
         adapters: [wagmiAdapter],
-        networks: [baseSepolia, base],
+        networks: [baseSepolia],
         defaultNetwork: baseSepolia,
         projectId,
         metadata,

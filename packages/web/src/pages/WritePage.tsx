@@ -103,7 +103,18 @@ export function WritePage() {
                             spellCheck={false}
                         />
 
-                        <div className="fixed bottom-8 left-0 right-0 mx-auto w-full max-w-md px-8 flex items-center justify-end z-20 pointer-events-none">
+                        <div className="fixed bottom-8 left-0 right-0 mx-auto w-full max-w-md px-8 flex items-center justify-between z-20 pointer-events-none">
+                            <div className="pointer-events-auto flex items-center gap-2">
+                                <div className="text-[10px] font-mono text-text-primary/40 uppercase tracking-widest">
+                                    Target: 84532
+                                </div>
+                                {chainId !== 84532 && (
+                                    <div className="px-2 py-1 bg-red-500 text-white text-[10px] font-mono font-bold uppercase tracking-widest animate-pulse">
+                                        WRONG NETWORK
+                                    </div>
+                                )}
+                            </div>
+
                             <div className="pointer-events-auto flex items-center gap-6">
                                 <div className="flex items-center gap-4 text-[10px] font-mono text-text-primary/30 uppercase tracking-widest">
                                     <span>{wordCount} WORDS</span>
