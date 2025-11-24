@@ -104,26 +104,28 @@ export function WritePage() {
                             spellCheck={false}
                         />
 
-                        <div className="fixed bottom-8 right-8 flex items-center gap-6 z-20">
-                            <div className="flex items-center gap-4 text-[10px] font-mono text-text-primary/30 uppercase tracking-widest">
-                                <span>{wordCount} WORDS</span>
-                                {statusMessage && (
-                                    <span className="text-brand-600 animate-pulse">
-                                        [{statusMessage}]
-                                    </span>
-                                )}
-                            </div>
+                        <div className="fixed bottom-8 left-0 right-0 mx-auto w-full max-w-md px-8 flex items-center justify-end z-20 pointer-events-none">
+                            <div className="pointer-events-auto flex items-center gap-6">
+                                <div className="flex items-center gap-4 text-[10px] font-mono text-text-primary/30 uppercase tracking-widest">
+                                    <span>{wordCount} WORDS</span>
+                                    {statusMessage && (
+                                        <span className="text-brand-600 animate-pulse">
+                                            [{statusMessage}]
+                                        </span>
+                                    )}
+                                </div>
 
-                            <button
-                                onClick={handleSave}
-                                disabled={!content.trim() || isSaving || isConfirming}
-                                className={cn(
-                                    "px-8 py-3 bg-text-primary text-surface font-mono font-bold text-xs uppercase tracking-widest hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
-                                    (isSaving || isConfirming) && "opacity-50 cursor-wait"
-                                )}
-                            >
-                                {isSaving || isConfirming ? 'SAVING...' : 'SAVE ENTRY'}
-                            </button>
+                                <button
+                                    onClick={handleSave}
+                                    disabled={!content.trim() || isSaving || isConfirming}
+                                    className={cn(
+                                        "px-8 py-3 bg-text-primary text-surface font-mono font-bold text-xs uppercase tracking-widest hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+                                        (isSaving || isConfirming) && "opacity-50 cursor-wait"
+                                    )}
+                                >
+                                    {isSaving || isConfirming ? 'SAVING...' : 'SAVE ENTRY'}
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
                 </div>
