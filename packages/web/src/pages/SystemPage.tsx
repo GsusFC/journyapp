@@ -5,10 +5,12 @@ import { ConnectButton } from '../components/ConnectButton'
 import { ZenLayout } from '../components/layout/ZenLayout'
 import { motion } from 'framer-motion'
 import { cn } from '../lib/utils'
+import { useTheme } from 'next-themes'
 
 export function SystemPage() {
     const { address } = useAccount()
     const { data: balance } = useBalance({ address })
+    const { theme, setTheme } = useTheme()
 
     const copyAddress = () => {
         if (address) {
@@ -37,7 +39,7 @@ export function SystemPage() {
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white border border-text-primary/10 p-6 flex flex-col justify-between h-auto min-h-[160px]"
+                            className="bg-white dark:bg-zinc-900 border border-text-primary/10 p-6 flex flex-col justify-between h-auto min-h-[160px]"
                         >
                             <div className="w-full">
                                 <div className="font-mono text-[10px] text-text-primary/40 uppercase tracking-widest mb-4">
@@ -72,26 +74,42 @@ export function SystemPage() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white border border-text-primary/10 p-6 flex flex-col h-64"
+                            className="bg-white dark:bg-zinc-900 border border-text-primary/10 p-6 flex flex-col h-64"
                         >
                             <div className="font-mono text-[10px] text-text-primary/40 uppercase tracking-widest mb-6">
                                 // MODULE: INTERFACE
                             </div>
 
                             <div className="flex-1 grid grid-cols-2 gap-4">
-                                <button className={cn(
-                                    "flex flex-col items-center justify-center gap-2 border-2 transition-all duration-300",
-                                    "border-brand-600 bg-surface-dark text-brand-600" // Active state (Light Mode default)
-                                )}>
-                                    <div className="w-4 h-4 rounded-full border border-current bg-white" />
+                                <button
+                                    onClick={() => setTheme('light')}
+                                    className={cn(
+                                        "flex flex-col items-center justify-center gap-2 border transition-all duration-300",
+                                        theme === 'light'
+                                            ? "border-brand-600 bg-brand-50/50 text-brand-600"
+                                            : "border-text-primary/10 text-text-primary/40 hover:border-text-primary/30 hover:text-text-primary"
+                                    )}
+                                >
+                                    <div className={cn(
+                                        "w-4 h-4 rounded-full border border-current",
+                                        theme === 'light' ? "bg-white" : "bg-transparent"
+                                    )} />
                                     <span className="text-[10px] font-bold uppercase tracking-widest">LIGHT MODE</span>
                                 </button>
 
-                                <button className={cn(
-                                    "flex flex-col items-center justify-center gap-2 border border-text-primary/10 text-text-primary/40",
-                                    "hover:border-text-primary/30 hover:text-text-primary"
-                                )}>
-                                    <div className="w-4 h-4 rounded-full border border-current bg-zinc-900" />
+                                <button
+                                    onClick={() => setTheme('dark')}
+                                    className={cn(
+                                        "flex flex-col items-center justify-center gap-2 border transition-all duration-300",
+                                        theme === 'dark'
+                                            ? "border-brand-600 bg-brand-900/20 text-brand-600"
+                                            : "border-text-primary/10 text-text-primary/40 hover:border-text-primary/30 hover:text-text-primary"
+                                    )}
+                                >
+                                    <div className={cn(
+                                        "w-4 h-4 rounded-full border border-current",
+                                        theme === 'dark' ? "bg-zinc-900" : "bg-transparent"
+                                    )} />
                                     <span className="text-[10px] font-bold uppercase tracking-widest">DARK MODE</span>
                                 </button>
                             </div>

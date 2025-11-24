@@ -3,10 +3,23 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg-surface: #f7f9fc;
+    --text-primary: #0f131e;
+    --text-muted: #64748b;
+    --color-brand: #6716e9;
+  }
+
+  .dark {
+    --bg-surface: #050505;
+    --text-primary: #e2e8f0;
+    --text-muted: #94a3b8;
+    --color-brand: #7c3aed;
+  }
 
   html,
   body {
-    @apply overflow-x-hidden m-0 p-0;
+    @apply overflow-x-hidden m-0 p-0 transition-colors duration-300;
   }
 }
 
