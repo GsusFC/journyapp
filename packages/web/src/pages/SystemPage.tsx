@@ -84,7 +84,7 @@ export function SystemPage() {
                                 <button
                                     onClick={() => setTheme('light')}
                                     className={cn(
-                                        "flex flex-col items-center justify-center gap-2 border transition-all duration-300",
+                                        "flex flex-col items-center justify-center gap-2 border transition-colors duration-300",
                                         theme === 'light'
                                             ? "border-brand-600 bg-brand-50/50 text-brand-600"
                                             : "border-text-primary/10 text-text-primary/40 hover:border-text-primary/30 hover:text-text-primary"
@@ -100,7 +100,7 @@ export function SystemPage() {
                                 <button
                                     onClick={() => setTheme('dark')}
                                     className={cn(
-                                        "flex flex-col items-center justify-center gap-2 border transition-all duration-300",
+                                        "flex flex-col items-center justify-center gap-2 border transition-colors duration-300",
                                         theme === 'dark'
                                             ? "border-brand-600 bg-brand-900/20 text-brand-600"
                                             : "border-text-primary/10 text-text-primary/40 hover:border-text-primary/30 hover:text-text-primary"
@@ -120,7 +120,7 @@ export function SystemPage() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className="bg-zinc-50 border border-text-primary/5 p-6 opacity-60 relative overflow-hidden"
+                            className="bg-zinc-50 dark:bg-zinc-900 border border-text-primary/5 p-6 opacity-60 relative overflow-hidden"
                         >
                             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
 

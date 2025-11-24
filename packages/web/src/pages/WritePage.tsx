@@ -97,8 +97,8 @@ export function WritePage() {
                             className={cn(
                                 "w-full min-h-[70vh] bg-transparent resize-none outline-none",
                                 "font-mono text-base leading-relaxed text-text-primary placeholder:text-text-primary/20",
-                                "transition-all duration-300 ease-out",
-                                "focus:bg-white rounded-sm p-4"
+                                "transition-colors duration-300 ease-out",
+                                "focus:bg-white dark:focus:bg-zinc-900 rounded-sm p-4"
                             )}
                             spellCheck={false}
                         />

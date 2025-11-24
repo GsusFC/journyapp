@@ -122,7 +122,7 @@ export function HistoryPage() {
                                     layoutId={`card-${index}`}
                                     key={index}
                                     onClick={() => handleCardClick(index)}
-                                    className="group cursor-pointer bg-white border border-text-primary/5 hover:border-brand-600/30 hover:shadow-sm transition-all duration-300 p-4 relative overflow-hidden flex items-center justify-between"
+                                    className="group cursor-pointer bg-white dark:bg-zinc-900 border border-text-primary/5 hover:border-brand-600/30 hover:shadow-sm transition-colors duration-300 p-4 relative overflow-hidden flex items-center justify-between"
                                 >
                                     <div className="absolute top-0 left-0 w-1 h-full bg-brand-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
