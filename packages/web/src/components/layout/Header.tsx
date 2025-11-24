@@ -47,8 +47,8 @@ export function Header() {
     }
 
     return (
-        <header className="border-b border-text-primary/5 bg-surface/80 backdrop-blur-md sticky top-0 z-10">
-            <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+        <header className="fixed top-0 left-0 right-0 mx-auto w-full max-w-md z-50 border-b border-text-primary/5 bg-surface/80 backdrop-blur-md pt-[env(safe-area-inset-top)]">
+            <div className="px-6 py-4 flex items-center justify-between">
                 {renderLeftButton()}
                 {renderRightButton()}
             </div>

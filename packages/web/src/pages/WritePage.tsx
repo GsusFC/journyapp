@@ -8,6 +8,7 @@ import { CONTRACT_ADDRESS } from '../lib/constants'
 import { cn } from '../lib/utils'
 import JournyLogABI from '../abis/JournyLog.json'
 import { Header } from '../components/layout/Header'
+import { ZenLayout } from '../components/layout/ZenLayout'
 
 export function WritePage() {
     const { address } = useAccount()
@@ -78,14 +79,14 @@ export function WritePage() {
     const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0
 
     return (
-        <div className="min-h-screen bg-surface flex flex-col relative">
+        <ZenLayout>
             <Header />
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col max-w-4xl mx-auto w-full p-6 relative">
-                <div className="w-full max-w-3xl space-y-8 mx-auto">
+            <main className="flex-1 flex flex-col w-full p-6 pt-24 relative">
+                <div className="w-full space-y-8 mx-auto">
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="relative"
                     >
@@ -93,11 +94,17 @@ export function WritePage() {
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="START WRITING..."
-                            className="w-full min-h-[60vh] bg-transparent resize-none outline-none font-mono text-sm md:text-base leading-relaxed text-text-primary placeholder:text-text-primary/20"
+                            className={cn(
+                                "w-full min-h-[60vh] bg-transparent resize-none outline-none",
+                                "font-mono text-base leading-relaxed text-text-primary placeholder:text-text-primary/20", // text-base prevents iOS zoom
+                                "transition-all duration-500 ease-out",
+                                "border-b border-transparent focus:border-brand-600/30",
+                                "focus:bg-white/50 dark:focus:bg-zinc-900/50 rounded-sm p-2" // Subtle background shift on focus
+                            )}
                             spellCheck={false}
                         />
 
-                        <div className="fixed bottom-8 right-8 flex items-center gap-6">
+                        <div className="fixed bottom-8 right-8 flex items-center gap-6 z-20">
                             <div className="flex items-center gap-4 text-[10px] font-mono text-text-primary/30 uppercase tracking-widest">
                                 <span>{wordCount} WORDS</span>
                                 {statusMessage && (
@@ -121,6 +128,6 @@ export function WritePage() {
                     </motion.div>
                 </div>
             </main>
-        </div>
+        </ZenLayout>
     )
 }
