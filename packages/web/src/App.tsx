@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { WritePage } from './pages/WritePage'
 import { HistoryPage } from './pages/HistoryPage'
 import { LandingPage } from './pages/LandingPage'
+import { SystemPage } from './pages/SystemPage'
 function App() {
   const { isConnected } = useAccount()
 
@@ -20,6 +21,10 @@ function App() {
         <Route
           path="/history"
           element={isConnected ? <HistoryPage /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/system"
+          element={isConnected ? <SystemPage /> : <Navigate to="/" />}
         />
       </Routes>
     </BrowserRouter>

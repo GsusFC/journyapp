@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAccount, useReadContract } from 'wagmi'
 import { readContract } from '@wagmi/core'
-import { useNavigate } from 'react-router-dom'
-import { ConnectButton } from '../components/ConnectButton'
 import { CONTRACT_ADDRESS } from '../lib/constants'
 import { formatDate } from '../lib/utils'
 import { ipfsService } from '../services/ipfs'
@@ -11,6 +9,7 @@ import { encryptionService } from '../services/encryption'
 import { config } from '../config/web3'
 import { ScrambleText } from '../components/ui/ScrambleText'
 import JournyLogABI from '../abis/JournyLog.json'
+import { Header } from '../components/layout/Header'
 
 interface DecryptedEntry {
     index: number
@@ -20,7 +19,6 @@ interface DecryptedEntry {
 }
 
 export function HistoryPage() {
-    const navigate = useNavigate()
     const { address } = useAccount()
     const [selectedId, setSelectedId] = useState<number | null>(null)
     const [decryptedEntry, setDecryptedEntry] = useState<DecryptedEntry | null>(null)
@@ -94,18 +92,7 @@ export function HistoryPage() {
 
     return (
         <div className="min-h-screen bg-surface flex flex-col relative">
-            {/* Header */}
-            <header className="border-b border-text-primary/5 bg-surface/80 backdrop-blur-md sticky top-0 z-10">
-                <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-                    <button
-                        onClick={() => navigate('/write')}
-                        className="text-xs uppercase tracking-widest text-text-primary/60 hover:text-brand-600 transition-colors font-bold flex items-center gap-2"
-                    >
-                        <span>←</span> WRITE
-                    </button>
-                    <ConnectButton />
-                </div>
-            </header>
+            <Header />
 
             {/* Main Content */}
             <main className="flex-1 max-w-4xl mx-auto w-full p-6">
