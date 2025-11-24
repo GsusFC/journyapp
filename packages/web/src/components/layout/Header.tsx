@@ -48,8 +48,14 @@ export function Header() {
 
     return (
         <header className="fixed top-0 left-0 right-0 mx-auto w-full max-w-md z-50 border-b border-stroke bg-surface/80 backdrop-blur-md pt-[env(safe-area-inset-top)]">
-            <div className="px-6 py-4 flex items-center justify-between">
+            <div className="px-6 py-4 flex items-center justify-between relative">
                 {renderLeftButton()}
+
+                {/* Center Logo */}
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                    <div className="w-3 h-3 bg-text-primary" />
+                </div>
+
                 {renderRightButton()}
             </div>
         </header>
