@@ -10,6 +10,7 @@ interface EncryptedPayload {
     iv: string
     salt: string
     timestamp: number
+    preview?: string
 }
 
 class IPFSService {

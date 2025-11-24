@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi'
 import { useAppKit } from '@reown/appkit/react'
+import { useNavigate } from 'react-router-dom'
 import { encryptionService } from '../services/encryption'
 import { ipfsService } from '../services/ipfs'
 import { CONTRACT_ADDRESS } from '../lib/constants'
@@ -15,6 +16,7 @@ export function WritePage() {
     const [content, setContent] = useState('')
     const [statusMessage, setStatusMessage] = useState<string | null>(null)
     const [isSaving, setIsSaving] = useState(false)
+    const navigate = useNavigate()
 
     const { writeContract, data: hash } = useWriteContract()
 
@@ -39,6 +41,10 @@ export function WritePage() {
             setIsSaving(true)
             setStatusMessage('ENCRYPTING...')
 
+            // Extract preview (first 2 lines, max 150 chars)
+            const lines = content.split('\n')
+            const preview = lines.slice(0, 2).join('\n').slice(0, 150)
+
             // 1. Encrypt
             const { encrypted, iv, salt } = await encryptionService.encrypt(content, address)
 
@@ -48,7 +54,8 @@ export function WritePage() {
                 encrypted,
                 iv,
                 salt,
-                timestamp: Date.now()
+                timestamp: Math.floor(Date.now() / 1000), // Fix: Use seconds, not milliseconds
+                preview
             })
 
             // 3. Write to Contract
@@ -68,12 +75,15 @@ export function WritePage() {
         }
     }
 
-    // Reset status when confirmed
+    // Reset status when confirmed and redirect
     if (isConfirmed && isSaving) {
         setIsSaving(false)
         setStatusMessage('SAVED ON-CHAIN')
         setContent('')
-        setTimeout(() => setStatusMessage(null), 3000)
+        setTimeout(() => {
+            setStatusMessage(null)
+            navigate('/history')
+        }, 1000)
     }
 
     const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0

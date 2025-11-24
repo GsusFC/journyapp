@@ -19,12 +19,20 @@ interface DecryptedEntry {
     timestamp: number
 }
 
+interface EntryPreview {
+    index: number
+    cid: string
+    preview: string
+    timestamp: number
+}
+
 export function HistoryPage() {
     const { address } = useAccount()
     const [selectedId, setSelectedId] = useState<number | null>(null)
     const [decryptedEntry, setDecryptedEntry] = useState<DecryptedEntry | null>(null)
     const [isDecrypting, setIsDecrypting] = useState(false)
     const [errorMsg, setErrorMsg] = useState<string | null>(null)
+    const [previews, setPreviews] = useState<Map<number, EntryPreview>>(new Map())
 
     const { data: entryCount, refetch, isError, error } = useReadContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
@@ -37,6 +45,43 @@ export function HistoryPage() {
     useEffect(() => {
         if (address) refetch()
     }, [address, refetch])
+
+    // Load previews for all entries
+    useEffect(() => {
+        if (!entryCount || !address) return
+
+        const loadPreviews = async () => {
+            const total = Number(entryCount)
+            const newPreviews = new Map<number, EntryPreview>()
+
+            for (let i = 0; i < total; i++) {
+                try {
+                    const cid = await readContract(config, {
+                        address: CONTRACT_ADDRESS as `0x${string}`,
+                        abi: JournyLogABI.abi,
+                        functionName: 'getEntry',
+                        args: [address, i],
+                        chainId: 84532,
+                    }) as string
+
+                    const payload = await ipfsService.fetchEncryptedEntry(cid)
+
+                    newPreviews.set(i, {
+                        index: i,
+                        cid,
+                        preview: payload.preview || 'No preview available',
+                        timestamp: payload.timestamp
+                    })
+                } catch (error) {
+                    console.error(`Failed to load preview for entry ${i}:`, error)
+                }
+            }
+
+            setPreviews(newPreviews)
+        }
+
+        loadPreviews()
+    }, [entryCount, address])
 
     const handleCardClick = async (index: number) => {
         setSelectedId(index)
@@ -89,7 +134,7 @@ export function HistoryPage() {
         setErrorMsg(null)
     }
 
-    const totalEntries = entryCount ? Number(entryCount) : 0
+    const totalEntries = Number(entryCount || 0)
 
     return (
         <ZenLayout>
@@ -98,12 +143,12 @@ export function HistoryPage() {
             {/* Main Content */}
             <main className="flex-1 w-full p-6 pt-20">
                 <div className="space-y-12">
-                    <div className="flex items-baseline justify-between border-b border-text-primary/10 pb-4">
+                    <div className="flex items-baseline justify-between border-b border-stroke pb-4">
                         <h1 className="text-lg font-bold tracking-tight text-text-primary uppercase">
                             Journal History
                         </h1>
                         <span className="font-mono text-xs text-text-primary/40">
-                            {totalEntries} {totalEntries === 1 ? 'MEMORY' : 'MEMORIES'}
+                            {totalEntries} {totalEntries === 1 ? 'ENTRY' : 'ENTRIES'}
                         </span>
                     </div>
 
@@ -117,23 +162,38 @@ export function HistoryPage() {
                     <div className="flex flex-col space-y-3">
                         {Array.from({ length: totalEntries }).map((_, i) => {
                             const index = totalEntries - 1 - i
+                            const preview = previews.get(index)
+
                             return (
                                 <motion.div
                                     layoutId={`card-${index}`}
                                     key={index}
                                     onClick={() => handleCardClick(index)}
-                                    className="group cursor-pointer bg-white dark:bg-zinc-900 border border-stroke hover:border-brand-600/30 hover:shadow-sm transition-colors duration-300 p-4 relative overflow-hidden flex items-center justify-between"
+                                    className="group cursor-pointer bg-white dark:bg-zinc-900 border border-stroke hover:border-brand-600/30 hover:shadow-sm transition-colors duration-300 p-5 relative overflow-hidden"
                                 >
                                     <div className="absolute top-0 left-0 w-1 h-full bg-brand-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                                    <div className="flex items-center gap-4 pl-2">
-                                        <span className="font-mono text-xs text-text-primary/30">
-                                            #{String(index + 1).padStart(3, '0')}
-                                        </span>
-                                        <div className="w-1.5 h-1.5 rounded-full bg-text-primary/10 group-hover:bg-brand-600 transition-colors" />
-                                    </div>
+                                    <div className="flex flex-col gap-3 pl-3">
+                                        {/* Header: Number + Date */}
+                                        <div className="flex items-baseline justify-between">
+                                            <span className="font-mono text-xs text-text-primary/30">
+                                                #{String(index + 1).padStart(3, '0')}
+                                            </span>
+                                            {preview && (
+                                                <span className="font-mono text-xs text-text-primary/40">
+                                                    {formatDate(preview.timestamp)}
+                                                </span>
+                                            )}
+                                        </div>
 
-                                    <div className="flex items-center">
+                                        {/* Preview */}
+                                        {preview && (
+                                            <p className="text-sm text-text-primary/60 line-clamp-2 leading-relaxed">
+                                                {preview.preview}
+                                            </p>
+                                        )}
+
+                                        {/* Action */}
                                         <span className="text-[10px] uppercase tracking-widest text-text-primary/40 font-bold group-hover:text-brand-600 transition-colors">
                                             View Memory →
                                         </span>
