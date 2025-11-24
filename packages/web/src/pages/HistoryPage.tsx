@@ -99,7 +99,7 @@ export function HistoryPage() {
             <main className="flex-1 w-full p-6 pt-20">
                 <div className="space-y-12">
                     <div className="flex items-baseline justify-between border-b border-text-primary/10 pb-4">
-                        <h1 className="text-2xl font-bold tracking-tight text-text-primary uppercase">
+                        <h1 className="text-lg font-bold tracking-tight text-text-primary uppercase">
                             Journal History
                         </h1>
                         <span className="font-mono text-xs text-text-primary/40">
@@ -113,8 +113,8 @@ export function HistoryPage() {
                         </div>
                     )}
 
-                    {/* Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* List View */}
+                    <div className="flex flex-col space-y-3">
                         {Array.from({ length: totalEntries }).map((_, i) => {
                             const index = totalEntries - 1 - i
                             return (
@@ -122,20 +122,20 @@ export function HistoryPage() {
                                     layoutId={`card-${index}`}
                                     key={index}
                                     onClick={() => handleCardClick(index)}
-                                    className="group cursor-pointer bg-white border border-text-primary/5 hover:border-brand-600/30 hover:shadow-lg transition-all duration-300 p-6 relative overflow-hidden"
+                                    className="group cursor-pointer bg-white border border-text-primary/5 hover:border-brand-600/30 hover:shadow-sm transition-all duration-300 p-4 relative overflow-hidden flex items-center justify-between"
                                 >
                                     <div className="absolute top-0 left-0 w-1 h-full bg-brand-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                                    <div className="flex justify-between items-start mb-4">
+                                    <div className="flex items-center gap-4 pl-2">
                                         <span className="font-mono text-xs text-text-primary/30">
                                             #{String(index + 1).padStart(3, '0')}
                                         </span>
-                                        <div className="w-2 h-2 rounded-full bg-text-primary/10 group-hover:bg-brand-600 transition-colors" />
+                                        <div className="w-1.5 h-1.5 rounded-full bg-text-primary/10 group-hover:bg-brand-600 transition-colors" />
                                     </div>
 
-                                    <div className="h-24 flex items-center justify-center">
-                                        <span className="text-xs uppercase tracking-widest text-text-primary/40 font-bold group-hover:text-brand-600 transition-colors">
-                                            View Memory
+                                    <div className="flex items-center">
+                                        <span className="text-[10px] uppercase tracking-widest text-text-primary/40 font-bold group-hover:text-brand-600 transition-colors">
+                                            View Memory →
                                         </span>
                                     </div>
                                 </motion.div>

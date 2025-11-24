@@ -24,7 +24,7 @@ export function SystemPage() {
             <main className="flex-1 w-full p-6 pt-20">
                 <div className="space-y-8">
                     <div className="flex items-baseline justify-between border-b border-text-primary/10 pb-4">
-                        <h1 className="text-2xl font-bold tracking-tight text-text-primary uppercase">
+                        <h1 className="text-lg font-bold tracking-tight text-text-primary uppercase">
                             System Control
                         </h1>
                         <span className="font-mono text-xs text-text-primary/40">
@@ -37,13 +37,13 @@ export function SystemPage() {
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white border border-text-primary/10 p-6 flex flex-col justify-between h-64"
+                            className="bg-white border border-text-primary/10 p-6 flex flex-col justify-between h-auto min-h-[160px]"
                         >
-                            <div>
+                            <div className="w-full">
                                 <div className="font-mono text-[10px] text-text-primary/40 uppercase tracking-widest mb-4">
                                     // MODULE: IDENTITY
                                 </div>
-                                <div className="space-y-2">
+                                <div className="space-y-2 mb-6">
                                     <div className="font-mono text-xs text-text-primary/60">LINKED ADDRESS</div>
                                     <button
                                         onClick={copyAddress}
@@ -52,16 +52,18 @@ export function SystemPage() {
                                         {address}
                                     </button>
                                 </div>
-                                <div className="mt-4 space-y-2">
-                                    <div className="font-mono text-xs text-text-primary/60">BALANCE</div>
-                                    <div className="text-2xl font-bold text-text-primary">
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 items-end border-t border-text-primary/5 pt-4">
+                                <div className="space-y-1">
+                                    <div className="font-mono text-[10px] text-text-primary/60 uppercase tracking-widest">BALANCE</div>
+                                    <div className="text-xl font-bold text-text-primary truncate">
                                         {balance ? `${Number(formatEther(balance.value)).toFixed(4)} ${balance.symbol}` : '...'}
                                     </div>
                                 </div>
-                            </div>
-
-                            <div className="mt-auto">
-                                <ConnectButton />
+                                <div className="flex justify-end">
+                                    <ConnectButton />
+                                </div>
                             </div>
                         </motion.div>
 
