@@ -98,7 +98,7 @@ export function WritePage() {
                                 "w-full min-h-[70vh] bg-transparent resize-none outline-none",
                                 "font-mono text-base leading-relaxed text-text-primary placeholder:text-text-primary/20", // text-base prevents iOS zoom
                                 "transition-all duration-300 ease-out",
-                                "border border-transparent focus:border-text-primary/10",
+                                "border border-transparent focus:border-text-primary/5",
                                 "focus:bg-white rounded-sm p-4" // Solid white background on focus
                             )}
                             spellCheck={false}
