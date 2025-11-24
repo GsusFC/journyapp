@@ -1,12 +1,12 @@
-import { useAccount, useBalance, useDisconnect } from 'wagmi'
+import { useAccount, useBalance } from 'wagmi'
 import { formatEther } from 'viem'
 import { Header } from '../components/layout/Header'
+import { ConnectButton } from '../components/ConnectButton'
 import { motion } from 'framer-motion'
 import { cn } from '../lib/utils'
 
 export function SystemPage() {
     const { address } = useAccount()
-    const { disconnect } = useDisconnect()
     const { data: balance } = useBalance({ address })
 
     const copyAddress = () => {
@@ -59,12 +59,9 @@ export function SystemPage() {
                                 </div>
                             </div>
 
-                            <button
-                                onClick={() => disconnect()}
-                                className="w-full py-3 border border-red-200 bg-red-50 text-red-600 font-bold text-xs uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all duration-300"
-                            >
-                                [ DISCONNECT WALLET ]
-                            </button>
+                            <div className="mt-auto">
+                                <ConnectButton />
+                            </div>
                         </motion.div>
 
                         {/* CARD 2: INTERFACE */}
