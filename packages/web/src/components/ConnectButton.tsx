@@ -41,7 +41,7 @@ export function ConnectButton() {
                 "transition-all duration-300"
             )}
         >
-            Connect Wallet
+            Connect Journy
         </motion.button>
     )
 }
