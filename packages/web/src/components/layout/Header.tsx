@@ -53,7 +53,7 @@ export function Header() {
 
                 {/* Center Logo */}
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                    <div className="w-3 h-3 bg-text-primary" />
+                    <div className="w-3 h-3 bg-brand-600 shadow-[0_0_20px_rgba(103,22,233,0.5)]" />
                 </div>
 
                 {renderRightButton()}
