@@ -25,7 +25,7 @@ export function SystemPage() {
 
             <main className="flex-1 w-full p-6 pt-20">
                 <div className="space-y-8">
-                    <div className="flex items-baseline justify-between border-b border-text-primary/10 pb-4">
+                    <div className="flex items-baseline justify-between border-b border-stroke pb-4">
                         <h1 className="text-lg font-bold tracking-tight text-text-primary uppercase">
                             System Control
                         </h1>
@@ -39,7 +39,7 @@ export function SystemPage() {
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white dark:bg-zinc-900 border border-text-primary/10 p-6 flex flex-col justify-between h-auto min-h-[160px]"
+                            className="bg-white dark:bg-zinc-900 border border-stroke p-6 flex flex-col justify-between h-auto min-h-[160px]"
                         >
                             <div className="w-full">
                                 <div className="font-mono text-[10px] text-text-primary/40 uppercase tracking-widest mb-4">
@@ -56,7 +56,7 @@ export function SystemPage() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4 items-end border-t border-text-primary/5 pt-4">
+                            <div className="grid grid-cols-2 gap-4 items-end border-t border-stroke pt-4">
                                 <div className="space-y-1">
                                     <div className="font-mono text-[10px] text-text-primary/60 uppercase tracking-widest">BALANCE</div>
                                     <div className="text-xl font-bold text-text-primary truncate">
@@ -74,7 +74,7 @@ export function SystemPage() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white dark:bg-zinc-900 border border-text-primary/10 p-6 flex flex-col h-64"
+                            className="bg-white dark:bg-zinc-900 border border-stroke p-6 flex flex-col h-64"
                         >
                             <div className="font-mono text-[10px] text-text-primary/40 uppercase tracking-widest mb-6">
                                 // MODULE: INTERFACE
@@ -87,7 +87,7 @@ export function SystemPage() {
                                         "flex flex-col items-center justify-center gap-2 border transition-colors duration-300",
                                         theme === 'light'
                                             ? "border-brand-600 bg-brand-50/50 text-brand-600"
-                                            : "border-text-primary/10 text-text-primary/40 hover:border-text-primary/30 hover:text-text-primary"
+                                            : "border-stroke text-text-primary/40 hover:border-text-primary/30 hover:text-text-primary"
                                     )}
                                 >
                                     <div className={cn(
@@ -103,7 +103,7 @@ export function SystemPage() {
                                         "flex flex-col items-center justify-center gap-2 border transition-colors duration-300",
                                         theme === 'dark'
                                             ? "border-brand-600 bg-brand-900/20 text-brand-600"
-                                            : "border-text-primary/10 text-text-primary/40 hover:border-text-primary/30 hover:text-text-primary"
+                                            : "border-stroke text-text-primary/40 hover:border-text-primary/30 hover:text-text-primary"
                                     )}
                                 >
                                     <div className={cn(
@@ -120,7 +120,7 @@ export function SystemPage() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className="bg-zinc-50 dark:bg-zinc-900 border border-text-primary/5 p-6 opacity-60 relative overflow-hidden"
+                            className="bg-zinc-50 dark:bg-zinc-900 border border-stroke p-6 opacity-60 relative overflow-hidden"
                         >
                             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
 
@@ -133,7 +133,7 @@ export function SystemPage() {
                                         CLANKER PROTOCOL
                                     </h3>
                                 </div>
-                                <div className="flex items-center gap-2 px-3 py-1 bg-text-primary/5 border border-text-primary/10">
+                                <div className="flex items-center gap-2 px-3 py-1 bg-text-primary/5 border border-stroke">
                                     <span className="text-xs">🔒</span>
                                     <span className="font-mono text-[10px] uppercase tracking-widest text-text-primary/60">
                                         LOCKED

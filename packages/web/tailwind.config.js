@@ -12,6 +12,7 @@ export default {
             },
             colors: {
                 surface: 'var(--bg-surface)',
+                stroke: 'var(--color-stroke)',
                 text: {
                     primary: 'var(--text-primary)',
                     muted: 'var(--text-muted)',

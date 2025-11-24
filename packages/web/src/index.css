@@ -8,6 +8,8 @@
     --text-primary: #0f131e;
     --text-muted: #64748b;
     --color-brand: #6716e9;
+    --color-stroke: rgba(15, 19, 30, 0.1);
+    /* 10% Black */
   }
 
   .dark {
@@ -15,6 +17,8 @@
     --text-primary: #e2e8f0;
     --text-muted: #94a3b8;
     --color-brand: #7c3aed;
+    --color-stroke: #27272a;
+    /* Zinc 800 - Solid Grey for Dark Mode */
   }
 
   html,
