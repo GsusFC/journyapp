@@ -32,7 +32,7 @@ export function SystemPage() {
                         </span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                         {/* CARD 1: IDENTITY */}
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
@@ -100,7 +100,7 @@ export function SystemPage() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className="md:col-span-2 bg-zinc-50 border border-text-primary/5 p-6 opacity-60 relative overflow-hidden"
+                            className="bg-zinc-50 border border-text-primary/5 p-6 opacity-60 relative overflow-hidden"
                         >
                             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
 
