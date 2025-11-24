@@ -1,4 +1,5 @@
 import { useAccount, useBalance, useDisconnect } from 'wagmi'
+import { formatEther } from 'viem'
 import { Header } from '../components/layout/Header'
 import { motion } from 'framer-motion'
 import { cn } from '../lib/utils'
@@ -53,7 +54,7 @@ export function SystemPage() {
                                 <div className="mt-4 space-y-2">
                                     <div className="font-mono text-xs text-text-primary/60">BALANCE</div>
                                     <div className="text-2xl font-bold text-text-primary">
-                                        {balance ? `${Number(balance.formatted).toFixed(4)} ${balance.symbol}` : '...'}
+                                        {balance ? `${Number(formatEther(balance.value)).toFixed(4)} ${balance.symbol}` : '...'}
                                     </div>
                                 </div>
                             </div>
