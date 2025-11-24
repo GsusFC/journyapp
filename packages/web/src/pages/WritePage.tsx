@@ -89,33 +89,29 @@ export function WritePage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="relative"
                     >
-                        <div className="absolute -top-6 left-0 flex items-center gap-2">
-                            <div className={cn(
-                                "w-2 h-2 rounded-full transition-colors duration-500",
-                                isSaving || isConfirming ? "bg-brand-600 animate-pulse" : "bg-green-500"
-                            )} />
-                            <span className="text-[10px] font-mono text-text-primary/40 uppercase tracking-widest">
-                                {statusMessage || (isSaving || isConfirming ? 'PROCESSING...' : 'READY')}
-                            </span>
-                        </div>
-
                         <textarea
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="START WRITING..."
-                            className="w-full min-h-[60vh] bg-transparent resize-none outline-none font-serif text-lg leading-relaxed text-text-primary placeholder:text-text-primary/20"
+                            className="w-full min-h-[60vh] bg-transparent resize-none outline-none font-mono text-sm md:text-base leading-relaxed text-text-primary placeholder:text-text-primary/20"
                             spellCheck={false}
                         />
 
-                        <div className="fixed bottom-8 right-8 flex items-center gap-4">
-                            <span className="font-mono text-xs text-text-primary/30">
-                                {wordCount} WORDS
-                            </span>
+                        <div className="fixed bottom-8 right-8 flex items-center gap-6">
+                            <div className="flex items-center gap-4 text-[10px] font-mono text-text-primary/30 uppercase tracking-widest">
+                                <span>{wordCount} WORDS</span>
+                                {statusMessage && (
+                                    <span className="text-brand-600 animate-pulse">
+                                        [{statusMessage}]
+                                    </span>
+                                )}
+                            </div>
+
                             <button
                                 onClick={handleSave}
                                 disabled={!content.trim() || isSaving || isConfirming}
                                 className={cn(
-                                    "px-8 py-3 bg-text-primary text-surface font-bold text-xs uppercase tracking-widest hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+                                    "px-8 py-3 bg-text-primary text-surface font-mono font-bold text-xs uppercase tracking-widest hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
                                     (isSaving || isConfirming) && "opacity-50 cursor-wait"
                                 )}
                             >
