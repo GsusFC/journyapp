@@ -154,15 +154,15 @@ export function HistoryPage() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={handleClose}
-                            className="fixed inset-0 bg-surface/90 backdrop-blur-sm z-40"
+                            className="fixed inset-0 bg-surface/90 dark:bg-black/90 backdrop-blur-sm z-40"
                         />
                         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
                             <motion.div
                                 layoutId={`card-${selectedId}`}
-                                className="bg-white w-full max-w-2xl h-[80vh] shadow-2xl border border-text-primary/10 overflow-hidden flex flex-col pointer-events-auto relative"
+                                className="bg-white dark:bg-zinc-900 w-full max-w-2xl h-[80vh] shadow-2xl border border-stroke overflow-hidden flex flex-col pointer-events-auto relative"
                             >
                                 {/* Modal Header */}
-                                <div className="p-6 border-b border-text-primary/5 flex justify-between items-center bg-surface">
+                                <div className="p-6 border-b border-stroke flex justify-between items-center bg-surface dark:bg-zinc-800/50">
                                     <div className="flex items-center gap-4">
                                         <span className="font-mono text-xs text-text-primary/40">
                                             #{String(selectedId + 1).padStart(3, '0')}
@@ -215,7 +215,7 @@ export function HistoryPage() {
                                                 className="whitespace-pre-wrap"
                                             />
 
-                                            <div className="mt-12 pt-8 border-t border-text-primary/5 flex justify-between items-center">
+                                            <div className="mt-12 pt-8 border-t border-stroke flex justify-between items-center">
                                                 <a
                                                     href={`https://ipfs.io/ipfs/${decryptedEntry.cid}`}
                                                     target="_blank"
