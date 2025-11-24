@@ -10,6 +10,7 @@ import { config } from '../config/web3'
 import { ScrambleText } from '../components/ui/ScrambleText'
 import JournyLogABI from '../abis/JournyLog.json'
 import { Header } from '../components/layout/Header'
+import { ZenLayout } from '../components/layout/ZenLayout'
 
 interface DecryptedEntry {
     index: number
@@ -91,11 +92,11 @@ export function HistoryPage() {
     const totalEntries = entryCount ? Number(entryCount) : 0
 
     return (
-        <div className="min-h-screen bg-surface flex flex-col relative">
+        <ZenLayout>
             <Header />
 
             {/* Main Content */}
-            <main className="flex-1 max-w-4xl mx-auto w-full p-6">
+            <main className="flex-1 w-full p-6 pt-20">
                 <div className="space-y-12">
                     <div className="flex items-baseline justify-between border-b border-text-primary/10 pb-4">
                         <h1 className="text-2xl font-bold tracking-tight text-text-primary uppercase">
@@ -235,6 +236,6 @@ export function HistoryPage() {
                     </>
                 )}
             </AnimatePresence>
-        </div>
+        </ZenLayout>
     )
 }

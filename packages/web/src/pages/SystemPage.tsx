@@ -2,6 +2,7 @@ import { useAccount, useBalance } from 'wagmi'
 import { formatEther } from 'viem'
 import { Header } from '../components/layout/Header'
 import { ConnectButton } from '../components/ConnectButton'
+import { ZenLayout } from '../components/layout/ZenLayout'
 import { motion } from 'framer-motion'
 import { cn } from '../lib/utils'
 
@@ -17,10 +18,10 @@ export function SystemPage() {
     }
 
     return (
-        <div className="min-h-screen bg-surface flex flex-col">
+        <ZenLayout>
             <Header />
 
-            <main className="flex-1 max-w-4xl mx-auto w-full p-6">
+            <main className="flex-1 w-full p-6 pt-20">
                 <div className="space-y-8">
                     <div className="flex items-baseline justify-between border-b border-text-primary/10 pb-4">
                         <h1 className="text-2xl font-bold tracking-tight text-text-primary uppercase">
@@ -127,6 +128,6 @@ export function SystemPage() {
                     </div>
                 </div>
             </main>
-        </div>
+        </ZenLayout>
     )
 }
