@@ -1,57 +1,70 @@
-import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useState, useRef } from 'react'
 
 interface ScrambleTextProps {
     text: string
-    speed?: number
-    scrambleSpeed?: number
+    duration?: number
     className?: string
 }
 
-const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*'
+const CHARS = '!@#$%^&*()_+-=[]{}|;:,.<>?/~`'
+
+// Generador de números pseudo-aleatorios con seed
+const seededRandom = (seed: number) => {
+    const x = Math.sin(seed) * 10000
+    return x - Math.floor(x)
+}
 
 export function ScrambleText({
     text,
-    speed = 0.5, // Segundos para revelar todo
-    scrambleSpeed = 30, // ms entre cambios de caracter
+    duration = 1.5,
     className
 }: ScrambleTextProps) {
-    const [displayedText, setDisplayedText] = useState('')
-    const [isComplete, setIsComplete] = useState(false)
+    const [displayedText, setDisplayedText] = useState(text)
+    const revealOrderRef = useRef<number[]>([])
+    const scrambleCharsRef = useRef<number[]>([])
+
+    // Inicializar orden de revelación y caracteres scramble una sola vez
+    useEffect(() => {
+        revealOrderRef.current = text.split('').map((_, i) => seededRandom(i + 1))
+        scrambleCharsRef.current = text.split('').map((_, i) => Math.floor(seededRandom(i + 100) * CHARS.length))
+    }, [text])
 
     useEffect(() => {
-        let interval: NodeJS.Timeout
-        let counter = 0
-        const totalSteps = text.length
-        const stepDuration = (speed * 1000) / totalSteps
+        const startTime = Date.now()
+        const totalDuration = duration * 1000
+        let frameId: number
 
-        interval = setInterval(() => {
-            if (counter >= totalSteps) {
-                clearInterval(interval)
-                setDisplayedText(text)
-                setIsComplete(true)
-                return
+        const animate = () => {
+            const elapsed = Date.now() - startTime
+            const progress = Math.min(elapsed / totalDuration, 1)
+
+            const newText = text.split('').map((char, i) => {
+                if (char === ' ' || char === '\n') return char
+                
+                const threshold = revealOrderRef.current[i] ?? 0.5
+                if (progress >= threshold) {
+                    return char
+                }
+                
+                // Usar índice fijo para scramble, rotando con el tiempo
+                const charIndex = (scrambleCharsRef.current[i] + Math.floor(elapsed / 50)) % CHARS.length
+                return CHARS[charIndex]
+            }).join('')
+
+            setDisplayedText(newText)
+
+            if (progress < 1) {
+                frameId = requestAnimationFrame(animate)
             }
+        }
 
-            const revealed = text.slice(0, counter)
-            const scrambled = Array.from({ length: text.length - counter })
-                .map(() => CHARS[Math.floor(Math.random() * CHARS.length)])
-                .join('')
-
-            setDisplayedText(revealed + scrambled)
-            counter++
-        }, Math.max(stepDuration, scrambleSpeed))
-
-        return () => clearInterval(interval)
-    }, [text, speed, scrambleSpeed])
+        frameId = requestAnimationFrame(animate)
+        return () => cancelAnimationFrame(frameId)
+    }, [duration, text])
 
     return (
-        <motion.div
-            className={className}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-        >
-            {isComplete ? text : displayedText}
-        </motion.div>
+        <div className={className}>
+            {displayedText}
+        </div>
     )
 }

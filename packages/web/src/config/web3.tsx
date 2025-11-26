@@ -39,8 +39,8 @@ try {
         },
         themeMode: 'light',
         themeVariables: {
-            '--w3m-accent': '#6716e9',
-            '--w3m-color-mix': '#f7f9fc',
+            '--w3m-accent': '#000000',
+            '--w3m-color-mix': '#ffffff',
             '--w3m-font-family': 'JetBrains Mono, monospace',
             '--w3m-border-radius-master': '0px'
         }

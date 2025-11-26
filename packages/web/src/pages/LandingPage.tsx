@@ -22,7 +22,7 @@ export function LandingPage() {
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.3, duration: 0.5 }}
                     >
-                        <div className="w-8 h-8 md:w-10 md:h-10 bg-brand-600 shadow-[0_0_20px_rgba(103,22,233,0.5)]" />
+                        <div className="w-8 h-8 md:w-10 md:h-10 bg-text-primary shadow-[0_0_20px_rgba(0,0,0,0.3)]" />
                     </motion.div>
 
                     <h1 className="text-5xl md:text-6xl font-black text-text-primary tracking-tight">

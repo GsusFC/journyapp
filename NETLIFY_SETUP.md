@@ -13,7 +13,7 @@ To ensure the Journy application runs correctly in production, you must configur
 | Variable Key | Description | Example Value |
 |--------------|-------------|---------------|
 | `VITE_WALLET_PROJECT_ID` | **CRITICAL**. The Project ID from Reown Cloud (formerly WalletConnect). | `349ee7a88d119a669be53f17c9449b78` |
-| `VITE_PINATA_JWT` | **CRITICAL**. Your Pinata JWT Token for IPFS uploads. | `eyJhbGciOiJIUzI1NiIsInR5cCI...` |
+| `VITE_PINATA_JWT` | **CRITICAL**. Your Pinata JWT Token for IPFS uploads. | `PASTE_YOUR_LONG_PINATA_JWT_HERE` |
 | `VITE_CONTRACT_ADDRESS` | The address of the deployed JournyLog contract on Base Sepolia. | `0xf5FeFabd1B0Ad49a0DE92B7c04FBa3518083Dc64` |
 | `VITE_IPFS_GATEWAY` | The IPFS Gateway URL (Optional, defaults to Pinata public). | `https://gateway.pinata.cloud/ipfs/` |
 
