@@ -12,7 +12,7 @@ export function PageLayout({ title, subtitle, children }: PageLayoutProps) {
         <ZenLayout>
             <Header />
 
-            <main className="flex-1 w-full px-4 pt-16 pb-6">
+            <main className="flex-1 w-full px-4 pt-16 pb-24">
                 <div className="space-y-4">
                     <div className="flex items-baseline justify-between border-b border-stroke pb-3">
                         <h1 className="text-lg font-bold tracking-tight text-text-primary uppercase">
