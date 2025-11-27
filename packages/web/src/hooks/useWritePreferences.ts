@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 
 type FontSize = 'small' | 'medium' | 'large'
-type FontFamily = 'mono' | 'serif'
+type FontFamily = 'mono' | 'sans' | 'serif'
 type LineHeight = 'compact' | 'normal' | 'relaxed'
 
 interface WritePreferences {
@@ -26,6 +26,7 @@ const FONT_SIZE_MAP: Record<FontSize, string> = {
 
 const FONT_FAMILY_MAP: Record<FontFamily, string> = {
     mono: 'font-mono',
+    sans: 'font-sans',
     serif: 'font-serif'
 }
 

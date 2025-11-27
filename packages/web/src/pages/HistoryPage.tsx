@@ -60,7 +60,7 @@ export function HistoryPage() {
             <Header />
 
             {/* Main Content */}
-            <main className="flex-1 w-full px-4 pt-16 pb-6">
+            <main className="flex-1 w-full px-4 pt-16 pb-24">
                 <div className="space-y-4">
                     <div className="flex items-baseline justify-between border-b border-stroke pb-3">
                         <h1 className="text-lg font-bold tracking-tight text-text-primary uppercase">
@@ -146,14 +146,41 @@ export function HistoryPage() {
                         {hasMore && (
                             <div 
                                 ref={loadMoreRef}
-                                className="py-6 flex items-center justify-center"
+                                className="pt-2 flex items-center justify-center"
                             >
                                 <button
                                     onClick={loadMore}
                                     disabled={isLoadingMore}
-                                    className="px-6 py-3 border border-text-primary/20 text-text-primary/60 font-mono text-xs uppercase tracking-widest hover:border-text-primary hover:text-text-primary hover:bg-text-primary/5 transition-colors disabled:opacity-50"
+                                    className={cn(
+                                        "w-[50px] h-[50px] rounded-full",
+                                        "flex items-center justify-center",
+                                        "border border-text-primary/20",
+                                        "text-text-primary/40",
+                                        "hover:border-text-primary/40 hover:text-text-primary/60",
+                                        "hover:scale-105 active:scale-95 transition-all",
+                                        "disabled:opacity-50 disabled:cursor-wait disabled:hover:scale-100"
+                                    )}
+                                    aria-label="Load more entries"
                                 >
-                                    {isLoadingMore ? 'Loading...' : 'Load More'}
+                                    {isLoadingMore ? (
+                                        <div className="w-5 h-5 border-2 border-text-primary/20 border-t-text-primary/60 rounded-full animate-spin" />
+                                    ) : (
+                                        <svg
+                                            width="20"
+                                            height="20"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        >
+                                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                                            <path d="M21 3v5h-5" />
+                                            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                                            <path d="M3 21v-5h5" />
+                                        </svg>
+                                    )}
                                 </button>
                             </div>
                         )}

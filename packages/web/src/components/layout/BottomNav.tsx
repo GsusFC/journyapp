@@ -66,8 +66,8 @@ export function BottomNav() {
                                     className={cn(
                                         "px-5 py-2 font-mono text-xs uppercase tracking-widest transition-all duration-300",
                                         isActive
-                                            ? "text-black font-bold"
-                                            : "text-black/40 hover:text-black/60"
+                                            ? "text-black dark:text-white font-bold"
+                                            : "text-black/40 dark:text-white/40 hover:text-black/60 dark:hover:text-white/60"
                                     )}
                                 >
                                     {item.label}

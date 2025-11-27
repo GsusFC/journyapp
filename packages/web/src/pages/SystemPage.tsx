@@ -151,6 +151,17 @@ export function SystemPage() {
                                         Mono
                                     </button>
                                     <button
+                                        onClick={() => setFontFamily('sans')}
+                                        className={cn(
+                                            "flex-1 py-2 border font-sans text-xs transition-colors",
+                                            preferences.fontFamily === 'sans'
+                                                ? "border-zinc-400 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800 text-text-primary"
+                                                : "border-zinc-300 dark:border-zinc-700 text-text-primary/40 hover:border-zinc-400 dark:hover:border-zinc-600"
+                                        )}
+                                    >
+                                        Sans
+                                    </button>
+                                    <button
                                         onClick={() => setFontFamily('serif')}
                                         className={cn(
                                             "flex-1 py-2 border font-serif text-xs transition-colors",

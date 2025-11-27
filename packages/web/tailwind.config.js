@@ -9,6 +9,8 @@ export default {
         extend: {
             fontFamily: {
                 mono: ['JetBrains Mono', 'monospace'],
+                sans: ['Instrument Sans', 'sans-serif'],
+                serif: ['Instrument Serif', 'serif'],
             },
             colors: {
                 surface: 'var(--bg-surface)',
