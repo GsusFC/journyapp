@@ -6,7 +6,6 @@ import { LandingPage } from './pages/LandingPage'
 import { SystemPage } from './pages/SystemPage'
 import { LeaderboardPage } from './pages/LeaderboardPage'
 import { BottomNav } from './components/layout/BottomNav'
-import { WriteFAB } from './components/layout/WriteFAB'
 import { ThemeProvider } from 'next-themes'
 import { ToastProvider } from './contexts/ToastContext'
 
@@ -39,9 +38,8 @@ function App() {
               element={isConnected ? <LeaderboardPage /> : <Navigate to="/" />}
             />
           </Routes>
-          {/* Global navigation components */}
+          {/* Global navigation */}
           <BottomNav />
-          <WriteFAB />
         </BrowserRouter>
       </ToastProvider>
     </ThemeProvider>

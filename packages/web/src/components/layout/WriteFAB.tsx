@@ -20,23 +20,26 @@ export function WriteFAB() {
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate('/write')}
             className={cn(
-                "fixed bottom-6 right-4 z-50",
-                "w-14 h-14 rounded-full",
+                "fixed bottom-6 left-1/2 z-50",
+                // Offset to the right of center to balance with nav
+                "translate-x-[calc(-50%+140px)]",
+                // 50px to match BottomNav visual weight
+                "w-[50px] h-[50px] rounded-full",
                 "flex items-center justify-center",
                 // Solid black button
                 "bg-text-primary dark:bg-white",
                 "text-white dark:text-black",
-                // Shadow
-                "shadow-[0_4px_20px_rgba(0,0,0,0.3)]",
+                // Shadow matching BottomNav
+                "shadow-[0_8px_32px_rgba(0,0,0,0.3)]",
                 // Safe area
-                "mb-[env(safe-area-inset-bottom)]"
+                "pb-[env(safe-area-inset-bottom)]"
             )}
             aria-label="Write new entry"
         >
             {/* Pen/Write icon */}
             <svg
-                width="24"
-                height="24"
+                width="20"
+                height="20"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"

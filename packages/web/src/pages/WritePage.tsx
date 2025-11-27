@@ -75,56 +75,65 @@ export function WritePage() {
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="START WRITING..."
-                            style={{
-                                background: 'transparent',
-                            }}
-                            onFocus={(e) => {
-                                e.target.style.background = 'linear-gradient(to bottom, var(--focus-bg) 0%, transparent 100%)'
-                            }}
-                            onBlur={(e) => {
-                                e.target.style.background = 'transparent'
-                            }}
                             className={cn(
-                                "w-full min-h-[85vh] resize-none",
+                                "w-full min-h-[85vh] resize-none bg-transparent",
                                 "text-text-primary placeholder:text-text-primary/20",
-                                "transition-all duration-300 ease-out p-3",
-                                "[--focus-bg:rgb(244,244,245)] dark:[--focus-bg:rgb(24,24,27)]",
-                                "outline-none border-none ring-0 focus:outline-none focus:border-none focus:ring-0",
+                                "p-3 outline-none border-none shadow-none",
+                                "focus:outline-none focus:border-none focus:ring-0 focus:shadow-none",
+                                "appearance-none",
                                 getTextareaClasses()
                             )}
                             spellCheck={false}
                         />
 
-                        <div className="fixed bottom-8 left-0 right-0 mx-auto w-full max-w-md px-8 flex items-center justify-between z-20 pointer-events-none">
-                            <div className="pointer-events-auto flex items-center gap-2">
-                                {isWrongNetwork && (
-                                    <div className="px-2 py-1 bg-red-500 text-white text-[10px] font-mono font-bold uppercase tracking-widest animate-pulse">
-                                        WRONG NETWORK
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="pointer-events-auto flex items-center gap-6">
-                                <div className="flex items-center gap-4 text-[10px] font-mono text-text-primary/30 uppercase tracking-widest">
-                                    <span>{wordCount} WORDS</span>
+                        {/* Bottom bar - word count + save button */}
+                        <div className="fixed bottom-6 right-4 z-20 pb-[env(safe-area-inset-bottom)]">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex items-center gap-4"
+                            >
+                                {/* Word count and status */}
+                                <div className="flex items-center gap-3 h-[50px]">
+                                    {isWrongNetwork && (
+                                        <span className="text-red-500 text-[10px] font-mono font-bold uppercase tracking-widest animate-pulse">
+                                            WRONG NETWORK
+                                        </span>
+                                    )}
+                                    <span className="text-[10px] font-mono text-text-primary/30 uppercase tracking-widest">
+                                        {wordCount} WORDS
+                                    </span>
                                     {statusMessage && (
-                                        <span className="text-text-primary animate-pulse">
-                                            [{statusMessage}]
+                                        <span className={cn(
+                                            "text-[10px] font-mono font-bold uppercase tracking-widest",
+                                            status === 'error' && "text-red-500",
+                                            status === 'success' && "text-green-600",
+                                            (status === 'encrypting' || status === 'uploading' || status === 'confirming') && "text-text-primary/60 animate-pulse"
+                                        )}>
+                                            {statusMessage}
                                         </span>
                                     )}
                                 </div>
 
+                                {/* Save button */}
                                 <button
                                     onClick={handleSave}
                                     disabled={!content.trim() || isSaving}
                                     className={cn(
-                                        "px-8 py-3 bg-text-primary text-surface font-mono font-bold text-xs uppercase tracking-widest hover:bg-text-primary/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+                                        "h-[50px] px-6 rounded-full",
+                                        "flex items-center justify-center",
+                                        "bg-text-primary dark:bg-white",
+                                        "text-white dark:text-black",
+                                        "font-mono font-bold text-xs uppercase tracking-widest",
+                                        "shadow-[0_2px_8px_rgba(0,0,0,0.15)]",
+                                        "hover:scale-105 active:scale-95 transition-transform",
+                                        "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
                                         isSaving && "opacity-50 cursor-wait"
                                     )}
                                 >
-                                    {isSaving ? 'SAVING...' : 'SAVE ENTRY'}
+                                    {isSaving ? 'SAVING...' : 'SAVE'}
                                 </button>
-                            </div>
+                            </motion.div>
                         </div>
                     </motion.div>
                 </div>

@@ -15,8 +15,7 @@ export default createConfig({
       chain: "baseSepolia",
       address: "0xf5FeFabd1B0Ad49a0DE92B7c04FBa3518083Dc64",
       // Block donde se desplegó el contrato (23 Nov 2025)
-      // Ajustar si tienes el bloque exacto de deployment
-      startBlock: 19_000_000,
+      startBlock: 34_059_544,
     },
   },
 });
