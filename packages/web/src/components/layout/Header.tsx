@@ -19,7 +19,7 @@ export function Header() {
                 </button>
             )
         }
-        if (path === '/history' || path === '/system') {
+        if (path === '/history' || path === '/system' || path === '/leaderboard') {
             return (
                 <button
                     onClick={() => navigate('/write')}
@@ -34,7 +34,17 @@ export function Header() {
 
     // Logic for Right Button
     const renderRightButton = () => {
-        if (path === '/write' || path === '/history') {
+        if (path === '/write') {
+            return (
+                <button
+                    onClick={() => navigate('/leaderboard')}
+                    className="text-xs uppercase tracking-widest text-text-primary/60 hover:text-brand-600 transition-colors font-bold flex items-center gap-2"
+                >
+                    RANK <span>→</span>
+                </button>
+            )
+        }
+        if (path === '/history' || path === '/leaderboard') {
             return (
                 <button
                     onClick={() => navigate('/system')}
@@ -45,7 +55,7 @@ export function Header() {
             )
         }
         // In /system, right side is empty
-        return <div className="w-12" /> // Spacer to keep alignment if needed, or just null
+        return <div className="w-12" />
     }
 
     return (

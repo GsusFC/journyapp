@@ -4,6 +4,7 @@ import { WritePage } from './pages/WritePage'
 import { HistoryPage } from './pages/HistoryPage'
 import { LandingPage } from './pages/LandingPage'
 import { SystemPage } from './pages/SystemPage'
+import { LeaderboardPage } from './pages/LeaderboardPage'
 import { ThemeProvider } from 'next-themes'
 import { ToastProvider } from './contexts/ToastContext'
 
@@ -30,6 +31,10 @@ function App() {
             <Route
               path="/system"
               element={isConnected ? <SystemPage /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/leaderboard"
+              element={isConnected ? <LeaderboardPage /> : <Navigate to="/" />}
             />
           </Routes>
         </BrowserRouter>
