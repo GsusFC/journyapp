@@ -4,6 +4,9 @@
         "packages/*"
     ],
     "scripts": {
-        "build": "npm run build --workspace packages/web"
+        "build": "npm run build --workspace packages/web",
+        "indexer:dev": "npm run dev --workspace packages/indexer",
+        "indexer:start": "npm run start --workspace packages/indexer",
+        "indexer:codegen": "npm run codegen --workspace packages/indexer"
     }
 }
