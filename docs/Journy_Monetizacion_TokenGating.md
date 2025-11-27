@@ -191,6 +191,51 @@ La wallet de Farcaster ya está conectada, así que:
 4. **Fase 4**: Conectar hooks con token real
 5. **Fase 5**: UI de "upgrade" y visualización de tier
 
+## Flywheel: Gamificación + Monetización
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│   Usuario escribe diario                                    │
+│          ↓                                                  │
+│   Gana puntos + streak                                      │
+│          ↓                                                  │
+│   Sube en leaderboard (necesita tier Legend)                │
+│          ↓                                                  │
+│   Quiere acceso → Compra $JOURNY                            │
+│          ↓                                                  │
+│   Llega a 30 días streak → Puede crear token via Clanker    │
+│          ↓                                                  │
+│   Más usuarios quieren el token                             │
+│          ↓                                                  │
+│   Token sube de valor                                       │
+│          ↓                                                  │
+│   Más incentivo para escribir y holdear                     │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Conexiones Gamificación ↔ Monetización
+
+| Gamificación | Monetización |
+|--------------|--------------|
+| Streak 30 días | Desbloquea Clanker → crea $JOURNY |
+| Leaderboard | Solo accesible con tier Legend (1000+ tokens) |
+| Badges | Solo visibles con tier Legend |
+| Puntos semanales | Incentiva uso constante → más holders |
+| Opt-in público | Requiere tier Pro+ para participar |
+
+### El Loop Virtuoso
+
+1. **Gratis**: Escribes, ganas streak, acumulas puntos
+2. **Curiosidad**: Ves leaderboard bloqueado, quieres competir
+3. **Compra**: Adquieres $JOURNY para desbloquear
+4. **Compromiso**: Ahora holdeas → más incentivo para usar la app
+5. **Veterano**: Llegas a 30 días → puedes crear más tokens
+6. **Evangelista**: Invitas amigos para que suban tus puntos/token
+
+> Todo está alineado. El usuario free puede usar la app indefinidamente, pero la gamificación le "tienta" a subir de tier.
+
 ## Notas
 
 - El token $JOURNY se creará via Clanker cuando un usuario alcance 30 días de streak
