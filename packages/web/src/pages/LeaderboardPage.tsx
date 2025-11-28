@@ -3,20 +3,9 @@ import { motion } from 'framer-motion'
 import { cn } from '../lib/utils'
 import { useAccount } from 'wagmi'
 import { useState } from 'react'
-
-// TODO: Conectar con el indexer cuando esté listo
-// import { useLeaderboard } from '../hooks/useLeaderboard'
+import { useLeaderboard } from '../hooks/useLeaderboard'
 
 type LeaderboardPeriod = 'weekly' | 'monthly' | 'allTime'
-
-// Mock data para desarrollo - se reemplazará con datos reales del indexer
-const MOCK_LEADERBOARD = [
-    { address: '0x1234...5678', points: 1250, streak: 45, entries: 52 },
-    { address: '0xabcd...efgh', points: 980, streak: 32, entries: 41 },
-    { address: '0x9876...5432', points: 750, streak: 28, entries: 35 },
-    { address: '0xfedc...ba98', points: 620, streak: 21, entries: 29 },
-    { address: '0x5555...6666', points: 480, streak: 17, entries: 22 },
-]
 
 function formatAddress(address: string): string {
     if (address.length <= 13) return address
@@ -32,11 +21,16 @@ function getRankEmoji(rank: number): string {
 
 export function LeaderboardPage() {
     const { address: userAddress } = useAccount()
-    const [period, setPeriod] = useState<LeaderboardPeriod>('weekly')
+    const [period, setPeriod] = useState<LeaderboardPeriod>('allTime')
+    const { leaderboard, isLoading } = useLeaderboard()
 
-    // TODO: Reemplazar con hook real
-    const leaderboard = MOCK_LEADERBOARD
-    const isLoading = false
+    // Encontrar stats del usuario actual
+    const currentUserStats = userAddress 
+        ? leaderboard.find(u => u.address.toLowerCase() === userAddress.toLowerCase())
+        : null
+    const currentUserRank = currentUserStats
+        ? leaderboard.findIndex(u => u.address.toLowerCase() === userAddress?.toLowerCase()) + 1
+        : null
 
     return (
         <PageLayout title="Leaderboard" subtitle={period.toUpperCase()}>
@@ -118,7 +112,7 @@ export function LeaderboardPage() {
                                                     {isCurrentUser && " (you)"}
                                                 </span>
                                                 <span className="font-mono text-[10px] text-text-primary/40">
-                                                    {user.streak} day streak • {user.entries} entries
+                                                    {user.currentStreak} day streak • {user.totalEntries} entries
                                                 </span>
                                             </div>
                                         </div>
@@ -126,7 +120,7 @@ export function LeaderboardPage() {
                                         {/* Points */}
                                         <div className="text-right">
                                             <span className="font-mono text-lg font-bold text-text-primary">
-                                                {user.points.toLocaleString()}
+                                                {user.totalPoints.toLocaleString()}
                                             </span>
                                             <span className="font-mono text-[10px] text-text-primary/40 ml-1">
                                                 pts
@@ -152,15 +146,21 @@ export function LeaderboardPage() {
                         </div>
                         <div className="grid grid-cols-3 gap-4 text-center">
                             <div>
-                                <div className="font-mono text-2xl font-bold text-text-primary">--</div>
+                                <div className="font-mono text-2xl font-bold text-text-primary">
+                                    {currentUserRank ?? '--'}
+                                </div>
                                 <div className="font-mono text-[10px] text-text-primary/40 uppercase">Rank</div>
                             </div>
                             <div>
-                                <div className="font-mono text-2xl font-bold text-text-primary">--</div>
+                                <div className="font-mono text-2xl font-bold text-text-primary">
+                                    {currentUserStats?.totalPoints ?? '--'}
+                                </div>
                                 <div className="font-mono text-[10px] text-text-primary/40 uppercase">Points</div>
                             </div>
                             <div>
-                                <div className="font-mono text-2xl font-bold text-text-primary">--</div>
+                                <div className="font-mono text-2xl font-bold text-text-primary">
+                                    {currentUserStats?.currentStreak ?? '--'}
+                                </div>
                                 <div className="font-mono text-[10px] text-text-primary/40 uppercase">Streak</div>
                             </div>
                         </div>
