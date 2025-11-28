@@ -6,7 +6,7 @@ import { LandingPage } from './pages/LandingPage'
 import { SystemPage } from './pages/SystemPage'
 import { LeaderboardPage } from './pages/LeaderboardPage'
 import { BottomNav } from './components/layout/BottomNav'
-import { ThemeProvider } from 'next-themes'
+import { ThemeProvider } from './components/ThemeProvider'
 import { ToastProvider } from './contexts/ToastContext'
 
 function App() {
