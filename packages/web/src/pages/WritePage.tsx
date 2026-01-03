@@ -24,12 +24,7 @@ export function WritePage() {
     const { status, error, isWrongNetwork, save, reset } = useWriteEntry()
     const { isAllowed, isLoading: isLoadingAllowed } = useAllowlist()
     const { hasEnoughBalance } = useBalanceCheck()
-    const {
-        fontSize, setFontSize,
-        fontFamily, setFontFamily,
-        lineHeight, setLineHeight,
-        getTextareaClasses
-    } = useWritePreferences()
+    const { getTextareaClasses } = useWritePreferences()
 
     const statusMessage = error ? `FAILED: ${error.message} ` : STATUS_MESSAGES[status] || ''
     const isSaving = status === 'encrypting' || status === 'uploading' || status === 'confirming'
