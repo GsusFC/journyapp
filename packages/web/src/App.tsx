@@ -8,6 +8,7 @@ import { LeaderboardPage } from './pages/LeaderboardPage'
 import { BottomNav } from './components/layout/BottomNav'
 import { ThemeProvider } from './components/ThemeProvider'
 import { ToastProvider } from './contexts/ToastContext'
+import { ThemeSync } from './components/ThemeSync'
 
 function App() {
   const { isConnected } = useAccount()
@@ -15,6 +16,7 @@ function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <ToastProvider>
+        <ThemeSync />
         <BrowserRouter>
           <Routes>
             <Route

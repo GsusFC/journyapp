@@ -34,7 +34,7 @@ class EncryptionService {
         )
     }
 
-    async encrypt(text: string, userAddress: string): Promise<{
+    async encrypt(text: string, passPhrase: string): Promise<{
         encrypted: string;
         iv: string;
         salt: string
@@ -47,8 +47,9 @@ class EncryptionService {
             const salt = window.crypto.getRandomValues(new Uint8Array(16))
             const iv = window.crypto.getRandomValues(new Uint8Array(12))
 
-            // Derive key from user's address (normalized to lowercase for consistency)
-            const key = await this.deriveKey(userAddress.toLowerCase(), salt)
+            // Derive key from passPhrase (signature)
+            // Note: We don't need to lowercase it as signatures are case-sensitive
+            const key = await this.deriveKey(passPhrase, salt)
 
             // Encrypt
             const encryptedBuffer = await window.crypto.subtle.encrypt(
@@ -77,7 +78,7 @@ class EncryptionService {
         encrypted: string,
         iv: string,
         salt: string,
-        userAddress: string
+        passPhrase: string
     ): Promise<string> {
         try {
             // Decode from base64
@@ -86,7 +87,7 @@ class EncryptionService {
             const saltArray = Uint8Array.from(atob(salt), c => c.charCodeAt(0))
 
             // Derive same key
-            const key = await this.deriveKey(userAddress.toLowerCase(), saltArray)
+            const key = await this.deriveKey(passPhrase, saltArray)
 
             // Decrypt
             const decryptedBuffer = await window.crypto.subtle.decrypt(

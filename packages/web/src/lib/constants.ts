@@ -1,4 +1,4 @@
-export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '0xf5FeFabd1B0Ad49a0DE92B7c04FBa3518083Dc64'
+export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '0x960820a7FC4463aF8e2F8a6Aa3B371aBcf3548b6'
 
 export const CHAIN_ID = 84532 // Base Sepolia
 

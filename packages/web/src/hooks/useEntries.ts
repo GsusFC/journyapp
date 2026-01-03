@@ -3,6 +3,7 @@ import { useAccount, useReadContract } from 'wagmi'
 import { readContract } from '@wagmi/core'
 import { CONTRACT_ADDRESS, CHAIN_ID } from '../lib/constants'
 import { ipfsService } from '../services/ipfs'
+import { useEncryptionKey } from './useEncryptionKey'
 import { encryptionService } from '../services/encryption'
 import { config } from '../config/web3'
 import JournyLogABI from '../abis/JournyLog.json'
@@ -29,6 +30,7 @@ export function useEntries(): UseEntriesReturn {
     const [isLoadingMore, setIsLoadingMore] = useState(false)
     const [loadedCount, setLoadedCount] = useState(0)
     const isInitialLoad = useRef(true)
+    const { getEncryptionSignature } = useEncryptionKey()
 
     const { data: entryCount, refetch, isError, error: contractError } = useReadContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
@@ -45,8 +47,12 @@ export function useEntries(): UseEntriesReturn {
     const loadBatch = useCallback(async (startFrom: number, count: number) => {
         if (!address || totalEntries === 0) return
 
+        // Asegurarnos de tener la firma antes de intentar desencriptar nada
+        const signature = await getEncryptionSignature()
+        if (!signature) return
+
         const newPreviews = new Map(previews)
-        
+
         // Cargar desde el más reciente hacia atrás
         for (let i = 0; i < count && (startFrom - i) >= 0; i++) {
             const index = startFrom - i
@@ -63,10 +69,24 @@ export function useEntries(): UseEntriesReturn {
 
                 const payload = await ipfsService.fetchEncryptedEntry(cid)
 
+                if (!payload.encrypted || !payload.iv || !payload.salt) {
+                    throw new Error('Invalid payload')
+                }
+
+                // Desencriptar para generar preview
+                const content = await encryptionService.decrypt(
+                    payload.encrypted,
+                    payload.iv,
+                    payload.salt,
+                    signature
+                )
+
+                const previewText = content.split('\n').slice(0, 2).join('\n').slice(0, 150)
+
                 newPreviews.set(index, {
                     index,
                     cid,
-                    preview: payload.preview || 'No preview available',
+                    preview: previewText,
                     timestamp: payload.timestamp
                 })
             } catch (err) {
@@ -76,16 +96,16 @@ export function useEntries(): UseEntriesReturn {
 
         setPreviews(newPreviews)
         setLoadedCount(prev => Math.min(prev + count, totalEntries))
-    }, [address, totalEntries, previews])
+    }, [address, totalEntries, previews, getEncryptionSignature])
 
     // Carga inicial
     useEffect(() => {
         if (!entryCount || !address) return
         if (!isInitialLoad.current) return
-        
+
         isInitialLoad.current = false
         setIsLoadingPreviews(true)
-        
+
         const total = Number(entryCount)
         loadBatch(total - 1, PAGE_SIZE).finally(() => {
             setIsLoadingPreviews(false)
@@ -123,11 +143,16 @@ export function useEntries(): UseEntriesReturn {
             throw new Error('Invalid payload structure')
         }
 
+        const signature = await getEncryptionSignature()
+        if (!signature) {
+            throw new Error('Encryption signature required to decrypt entries')
+        }
+
         const content = await encryptionService.decrypt(
             payload.encrypted,
             payload.iv,
             payload.salt,
-            address
+            signature
         )
 
         return {
@@ -136,12 +161,12 @@ export function useEntries(): UseEntriesReturn {
             content,
             timestamp: payload.timestamp
         }
-    }, [address])
+    }, [address, getEncryptionSignature])
 
     // Cargar más entradas
     const loadMore = useCallback(() => {
         if (isLoadingMore || !hasMore) return
-        
+
         setIsLoadingMore(true)
         const nextIndex = totalEntries - loadedCount - 1
         loadBatch(nextIndex, PAGE_SIZE).finally(() => {

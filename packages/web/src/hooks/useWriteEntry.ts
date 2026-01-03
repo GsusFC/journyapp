@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi'
 import { useAppKit } from '@reown/appkit/react'
 import { encryptionService } from '../services/encryption'
+import { useEncryptionKey } from './useEncryptionKey'
 import { ipfsService } from '../services/ipfs'
 import { CONTRACT_ADDRESS, CHAIN_ID } from '../lib/constants'
 import JournyLogABI from '../abis/JournyLog.json'
@@ -21,7 +22,8 @@ export function useWriteEntry(): UseWriteEntryReturn {
     const { address } = useAccount()
     const chainId = useChainId()
     const { open } = useAppKit()
-    
+    const { getEncryptionSignature } = useEncryptionKey()
+
     const [internalStatus, setInternalStatus] = useState<InternalStatus>('idle')
     const [error, setError] = useState<WriteError | null>(null)
 
@@ -59,12 +61,19 @@ export function useWriteEntry(): UseWriteEntryReturn {
             setInternalStatus('encrypting')
             setError(null)
 
-            // Extraer preview (primeras 2 líneas, max 150 chars)
-            const lines = content.split('\n')
-            const preview = lines.slice(0, 2).join('\n').slice(0, 150)
+            setInternalStatus('encrypting')
+            setError(null)
 
-            // 1. Encriptar
-            const { encrypted, iv, salt } = await encryptionService.encrypt(content, address)
+            // 0. Obtener firma para encriptación
+            const signature = await getEncryptionSignature()
+            if (!signature) {
+                // Usuario rechazó firma o error
+                setInternalStatus('idle')
+                return
+            }
+
+            // 1. Encriptar con firma
+            const { encrypted, iv, salt } = await encryptionService.encrypt(content, signature)
 
             // 2. Subir a IPFS
             currentStage = 'ipfs'
@@ -73,8 +82,7 @@ export function useWriteEntry(): UseWriteEntryReturn {
                 encrypted,
                 iv,
                 salt,
-                timestamp: Math.floor(Date.now() / 1000),
-                preview
+                timestamp: Math.floor(Date.now() / 1000)
             })
 
             // 3. Escribir en contrato
@@ -93,7 +101,7 @@ export function useWriteEntry(): UseWriteEntryReturn {
             setError({ stage: currentStage, message })
             setInternalStatus('error')
         }
-    }, [address, isWrongNetwork, open, writeContract])
+    }, [address, isWrongNetwork, open, writeContract, getEncryptionSignature])
 
     const reset = useCallback(() => {
         setInternalStatus('idle')

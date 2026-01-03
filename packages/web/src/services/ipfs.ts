@@ -3,14 +3,20 @@
  * Uses Pinata for pinning
  */
 
-import { PINATA_JWT } from '../lib/constants'
+import { PINATA_JWT, IPFS_GATEWAY } from '../lib/constants'
+
+const GATEWAYS = [
+    IPFS_GATEWAY,
+    'https://ipfs.io/ipfs/',
+    'https://cloudflare-ipfs.com/ipfs/',
+    'https://dweb.link/ipfs/'
+]
 
 interface EncryptedPayload {
     encrypted: string
     iv: string
     salt: string
     timestamp: number
-    preview?: string
 }
 
 class IPFSService {
@@ -49,18 +55,27 @@ class IPFSService {
     }
 
     async fetchEncryptedEntry(cid: string): Promise<EncryptedPayload> {
-        try {
-            const response = await fetch(`https://gateway.pinata.cloud/ipfs/${cid}`)
+        let lastError: Error | null = null;
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch from IPFS')
+        for (const gateway of GATEWAYS) {
+            try {
+                // Ensure gateway ends with /
+                const baseUrl = gateway.endsWith('/') ? gateway : `${gateway}/`
+                const response = await fetch(`${baseUrl}${cid}`)
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch from ${gateway}: ${response.statusText}`)
+                }
+
+                return await response.json()
+            } catch (error) {
+                console.warn(`Gateway ${gateway} failed for ${cid}:`, error)
+                lastError = error instanceof Error ? error : new Error('Unknown error')
+                continue
             }
-
-            return await response.json()
-        } catch (error) {
-            console.error('IPFS fetch error:', error)
-            throw new Error('Failed to fetch from IPFS')
         }
+
+        throw new Error(`All gateways failed. Last error: ${lastError?.message}`)
     }
 }
 

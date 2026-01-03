@@ -25,6 +25,9 @@ contract JournyLog is ReentrancyGuard, Pausable, Ownable {
     // uint16 is sufficient for ~179 years of daily streaks.
     mapping(address => uint16) public currentStreak;
 
+    // Allowlist mapping (Address => Allowed Status)
+    mapping(address => bool) public allowedUsers;
+
     // --- Events ---
 
     event EntryLogged(
@@ -33,6 +36,8 @@ contract JournyLog is ReentrancyGuard, Pausable, Ownable {
         uint256 timestamp,
         uint16 streak
     );
+
+    event UserAllowed(address indexed user, bool status);
 
     // --- Constructor ---
 
@@ -44,7 +49,12 @@ contract JournyLog is ReentrancyGuard, Pausable, Ownable {
      * @notice Logs a new journal entry and updates the user's streak.
      * @param _cid The IPFS Content Identifier of the encrypted entry.
      */
+    /**
+     * @notice Logs a new journal entry and updates the user's streak.
+     * @param _cid The IPFS Content Identifier of the encrypted entry.
+     */
     function logEntry(string calldata _cid) external nonReentrant whenNotPaused {
+        require(allowedUsers[msg.sender], "User not allowed");
         require(bytes(_cid).length > 0, "CID cannot be empty");
 
         address user = msg.sender;
@@ -115,5 +125,27 @@ contract JournyLog is ReentrancyGuard, Pausable, Ownable {
 
     function unpause() external onlyOwner {
         _unpause();
+    }
+
+    /**
+     * @notice Updates the allowed status for a user.
+     * @param _user The user to update.
+     * @param _status The new status (true = allowed, false = restricted).
+     */
+    function setAllowed(address _user, bool _status) external onlyOwner {
+        allowedUsers[_user] = _status;
+        emit UserAllowed(_user, _status);
+    }
+
+    /**
+     * @notice Batch updates allowed status for multiple users.
+     * @param _users Array of users.
+     * @param _status The new status for all.
+     */
+    function setAllowedBatch(address[] calldata _users, bool _status) external onlyOwner {
+        for (uint256 i = 0; i < _users.length; i++) {
+            allowedUsers[_users[i]] = _status;
+            emit UserAllowed(_users[i], _status);
+        }
     }
 }

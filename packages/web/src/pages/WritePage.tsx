@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { useWriteEntry, useBalanceCheck, useToast, useWritePreferences } from '../hooks'
+import { useWriteEntry, useWritePreferences, useToast, useAllowlist, useBalanceCheck } from '../hooks'
 import { cn } from '../lib/utils'
 import { Header } from '../components/layout/Header'
 import { ZenLayout } from '../components/layout/ZenLayout'
@@ -22,10 +22,16 @@ export function WritePage() {
     const toast = useToast()
 
     const { status, error, isWrongNetwork, save, reset } = useWriteEntry()
+    const { isAllowed, isLoading: isLoadingAllowed } = useAllowlist()
     const { hasEnoughBalance } = useBalanceCheck()
-    const { getTextareaClasses } = useWritePreferences()
+    const {
+        fontSize, setFontSize,
+        fontFamily, setFontFamily,
+        lineHeight, setLineHeight,
+        getTextareaClasses
+    } = useWritePreferences()
 
-    const statusMessage = error ? `FAILED: ${error.message}` : STATUS_MESSAGES[status] || ''
+    const statusMessage = error ? `FAILED: ${error.message} ` : STATUS_MESSAGES[status] || ''
     const isSaving = status === 'encrypting' || status === 'uploading' || status === 'confirming'
 
     // Redirigir al historial cuando se guarda exitosamente
@@ -50,7 +56,7 @@ export function WritePage() {
             toast.error('Insufficient ETH balance for transaction')
             return
         }
-        
+
         if (status === 'success') {
             setContent('')
         }
@@ -65,6 +71,29 @@ export function WritePage() {
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col w-full px-3 pt-16 pb-24 relative">
+                {/* Restricted Access Warning */}
+                {!isLoadingAllowed && !isAllowed && (
+                    <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-lg mb-6 flex items-center gap-3">
+                        <span className="text-xl">🔒</span>
+                        <div>
+                            <p className="font-bold">Access Restricted</p>
+                            <p className="text-sm">You are not on the allowlist. Please contact the administrator to get access.</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Error Message */}
+                {error && (
+                    <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-6 flex items-center justify-between">
+                        <div>
+                            <p className="font-bold">Error</p>
+                            <p className="text-sm">{error.message}</p>
+                        </div>
+                        <button onClick={reset} className="text-red-600 hover:text-red-800 font-bold text-sm">
+                            Dismiss
+                        </button>
+                    </div>
+                )}
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -119,7 +148,7 @@ export function WritePage() {
                     {/* Save button */}
                     <button
                         onClick={handleSave}
-                        disabled={!content.trim() || isSaving}
+                        disabled={!content.trim() || isSaving || !isAllowed}
                         className={cn(
                             "h-[50px] px-6 rounded-full",
                             "flex items-center justify-center",
